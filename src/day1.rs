@@ -25,6 +25,6 @@ pub fn run() {
 
     // println!("Part 1: {:?}", p1_count);
     // println!("Part 2: {:?}", p2_count);
-    assert!(p1_count == 1154);
-    assert!(p2_count == 1127);
+    assert_eq!(p1_count, 1154);
+    assert_eq!(p2_count, 1127);
 }

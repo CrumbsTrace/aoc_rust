@@ -3,8 +3,8 @@ pub fn run() {
     let (p1, p2) = follow_instructions();
     // println!("Part 1: {:?}", p1);
     // println!("Part 2: {:?}", p2);
-    assert!(p1 == 1488669);
-    assert!(p2 == 1176514794);
+    assert_eq!(p1, 1488669);
+    assert_eq!(p2, 1176514794);
 }
 
 fn follow_instructions() -> (u32, u32) {

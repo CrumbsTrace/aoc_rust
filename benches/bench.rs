@@ -1,12 +1,17 @@
-use aoc_rust::day1;
-use aoc_rust::day2;
+use aoc_rust::*;
 use criterion::{criterion_group, criterion_main, Criterion};
 
 fn criterion_benchmark(c: &mut Criterion) {
-    let mut group = c.benchmark_group("All Days");
-    group.bench_function("Day 1", |b| b.iter(|| day1::run()));
-    group.bench_function("Day 2", |b| b.iter(|| day2::run()));
-    group.finish();
+    c.bench_function("All days", |b| {
+        b.iter(|| {
+            day1::run();
+            day2::run();
+            day3::run();
+            day4::run();
+        })
+    });
+
+    // c.bench_function("Day 4", |b| b.iter(|| day4::run()));
 }
 
 criterion_group!(benches, criterion_benchmark);
