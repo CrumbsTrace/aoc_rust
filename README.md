@@ -1,1 +1,1 @@
-This project was made as a challenge to myself to create a solution that could solve all 25 days of Advent of Code 2021 in a single day. I might eventually restructure to extend this challenge to previous years
+This project was made as a challenge to myself to create a solution that could solve all 25 days of Advent of Code 2021 in a single second. I might eventually restructure to extend this challenge to previous years
