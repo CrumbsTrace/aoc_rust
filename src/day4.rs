@@ -8,7 +8,7 @@ pub fn run() {
         .map(|n| n.parse::<u8>().unwrap())
         .collect::<Vec<u8>>();
 
-    let mut bingo_cards = lines[1..]
+    let mut bingo_cardss = lines[1..]
         .chunks(6)
         .map(|c| Bingo::new(c))
         .collect::<Vec<Bingo>>();
@@ -16,8 +16,8 @@ pub fn run() {
     let mut winning_score = 0;
     let mut last_winning_score = 0;
     for n in numbers {
-        let cards_left = bingo_cards.len();
-        for card in &mut bingo_cards {
+        let cards_left = bingo_cardss.len();
+        for card in &mut bingo_cardss {
             card.mark(n);
             if winning_score == 0 && card.won {
                 winning_score = card.unmarked_sum() * n as u32;
@@ -26,7 +26,7 @@ pub fn run() {
                 last_winning_score = card.unmarked_sum() * n as u32;
             }
         }
-        bingo_cards = bingo_cards.into_iter().filter(|c| !c.won).collect();
+        bingo_cardss = bingo_cardss.into_iter().filter(|c| !c.won).collect();
     }
     // println!("Part 1: {}", winning_score);
     // println!("Part 2: {}", last_winning_score);
