@@ -8,10 +8,7 @@ pub fn run() {
         .map(|n| n.parse::<u8>().unwrap())
         .collect::<Vec<u8>>();
 
-    let mut bingo_cardss = lines[1..]
-        .chunks(6)
-        .map(|c| Bingo::new(c))
-        .collect::<Vec<Bingo>>();
+    let mut bingo_cardss = lines[1..].chunks(6).map(Bingo::new).collect::<Vec<Bingo>>();
 
     let mut winning_score = 0;
     let mut last_winning_score = 0;
@@ -93,9 +90,7 @@ impl Bingo {
                 .map(|c| c.parse::<u8>().unwrap())
                 .collect();
 
-            for j in 0..5 {
-                squares[i][j] = line[j];
-            }
+            squares[i][..5].clone_from_slice(&line[..5]);
         }
         squares
     }

@@ -38,25 +38,25 @@ pub fn run() {
     assert_eq!(p2, 1084606);
 }
 
-fn get_string_by_length(line: &Vec<Digit>, length: usize) -> &Digit {
+fn get_string_by_length(line: &[Digit], length: usize) -> &Digit {
     line.iter().find(|w| w.len() == length).unwrap()
 }
 
-fn check_len_and_subset(l: &Vec<Digit>, len: usize, s: &Digit) -> Digit {
+fn check_len_and_subset(l: &[Digit], len: usize, s: &Digit) -> Digit {
     l.iter()
         .find(|w| w.len() == len && (s.is_subset(w) || s.is_superset(w)))
         .unwrap()
         .clone()
 }
 
-fn check_len_and_not_eq(l: &Vec<Digit>, len: usize, s1: &Digit, s2: &Digit) -> Digit {
+fn check_len_and_not_eq(l: &[Digit], len: usize, s1: &Digit, s2: &Digit) -> Digit {
     l.iter()
         .find(|w| w.len() == len && !s1.eq(w) && !s2.eq(w))
         .unwrap()
         .clone()
 }
 
-fn get_zero(line: &Vec<Digit>, nine_set: &Digit, one_set: &Digit) -> Digit {
+fn get_zero(line: &[Digit], nine_set: &Digit, one_set: &Digit) -> Digit {
     line.iter()
         .find(|w| w.len() == 6 && !nine_set.eq(w) && one_set.is_subset(w))
         .unwrap()

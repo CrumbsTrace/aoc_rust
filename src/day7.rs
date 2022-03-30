@@ -8,7 +8,7 @@ pub fn run() {
         .map(|n| n.parse::<i32>().unwrap())
         .collect::<Vec<i32>>();
 
-    crabs.sort();
+    crabs.sort_unstable();
 
     let center = crabs[crabs.len() / 2 - 1];
 
@@ -41,7 +41,7 @@ pub fn run() {
     assert_eq!(p2, 95167302);
 }
 
-fn calculate_fuel_linear(crabs: &Vec<i32>, pos: i32) -> i32 {
+fn calculate_fuel_linear(crabs: &[i32], pos: i32) -> i32 {
     crabs.iter().map(|n| sum_of_integers((n - pos).abs())).sum()
 }
 

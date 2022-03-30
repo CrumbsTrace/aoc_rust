@@ -1,8 +1,11 @@
 use std::{collections::HashMap, fs};
 
+type Point = (i32, i32);
+type Pipe = (Point, Point);
+
 pub fn run() {
     let input = fs::read_to_string("inputs/day5.txt").unwrap();
-    let pipes = input
+    let pipes: Vec<Pipe> = input
         .lines()
         .map(|line| {
             let parsed = line
@@ -22,7 +25,7 @@ pub fn run() {
     assert_eq!(p2, 20012);
 }
 
-pub fn count_intersections(pipes: &Vec<((i32, i32), (i32, i32))>, ignore_diagonal: bool) -> usize {
+pub fn count_intersections(pipes: &[Pipe], ignore_diagonal: bool) -> usize {
     let mut counts: HashMap<u32, u16> = HashMap::with_capacity(100_000);
 
     for pipe in pipes {
