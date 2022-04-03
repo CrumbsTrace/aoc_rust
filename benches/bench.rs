@@ -19,7 +19,8 @@ fn criterion_benchmark(c: &mut Criterion) {
     // group.bench_function("Day 10", |b| b.iter(day10::run));
     // group.bench_function("Day 11", |b| b.iter(day11::run));
     // group.bench_function("Day 12", |b| b.iter(day12::run));
-    group.bench_function("Day 13", |b| b.iter(day13::run));
+    // group.bench_function("Day 13", |b| b.iter(day13::run));
+    group.bench_function("Day 14", |b| b.iter(day14::run));
 
     // group.bench_function("All days", |b| {
     //     b.iter(day1::run);
