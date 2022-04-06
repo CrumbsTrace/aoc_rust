@@ -22,24 +22,26 @@ fn criterion_benchmark(c: &mut Criterion) {
     // group.bench_function("Day 13", |b| b.iter(day13::run));
     // group.bench_function("Day 14", |b| b.iter(day14::run));
     // group.bench_function("Day 15", |b| b.iter(day15::run));
+    group.bench_function("Day 16", |b| b.iter(day16::run));
 
-    group.bench_function("All days", |b| {
-        b.iter(day1::run);
-        b.iter(day2::run);
-        b.iter(day3::run);
-        b.iter(day4::run);
-        b.iter(day5::run);
-        b.iter(day6::run);
-        b.iter(day7::run);
-        b.iter(day8::run);
-        b.iter(day9::run);
-        b.iter(day10::run);
-        b.iter(day11::run);
-        b.iter(day12::run);
-        b.iter(day13::run);
-        b.iter(day14::run);
-        b.iter(day15::run);
-    });
+    // group.bench_function("All days", |b| {
+    //     b.iter(day1::run);
+    //     b.iter(day2::run);
+    //     b.iter(day3::run);
+    //     b.iter(day4::run);
+    //     b.iter(day5::run);
+    //     b.iter(day6::run);
+    //     b.iter(day7::run);
+    //     b.iter(day8::run);
+    //     b.iter(day9::run);
+    //     b.iter(day10::run);
+    //     b.iter(day11::run);
+    //     b.iter(day12::run);
+    //     b.iter(day13::run);
+    //     b.iter(day14::run);
+    //     b.iter(day15::run);
+    //     b.iter(day16::run);
+    // });
 
     group.finish();
     // c.bench_function("test", |b| b.iter(day12::run));
