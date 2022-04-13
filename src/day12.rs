@@ -1,7 +1,8 @@
-use std::{collections::HashMap, fs};
+use rustc_hash::FxHashMap;
+use std::fs;
 
 pub fn run() {
-    let mut caves = HashMap::new();
+    let mut caves = FxHashMap::default();
 
     fs::read_to_string("inputs/day12.txt")
         .unwrap()
@@ -25,8 +26,8 @@ pub fn run() {
                 .add_edge(split[0].to_string());
         });
 
-    let p1 = traverse_all_routes(&caves, "start", &mut Vec::new(), false);
-    let p2 = traverse_all_routes(&caves, "start", &mut Vec::new(), true);
+    let p1 = traverse_all_routes(&caves, "start", &mut Vec::with_capacity(20), false);
+    let p2 = traverse_all_routes(&caves, "start", &mut Vec::with_capacity(20), true);
 
     // println!("Part 1: {}", p1);
     // println!("Part 2: {}", p2);
@@ -34,10 +35,10 @@ pub fn run() {
     assert_eq!(p2, 117_095);
 }
 
-fn traverse_all_routes(
-    caves: &HashMap<String, Cave>,
-    current_position: &str,
-    visited: &mut Vec<String>,
+fn traverse_all_routes<'a>(
+    caves: &'a FxHashMap<String, Cave>,
+    current_position: &'a str,
+    visited: &mut Vec<&'a str>,
     mut allow_double_visit: bool,
 ) -> u32 {
     if current_position == "end" {
@@ -46,21 +47,20 @@ fn traverse_all_routes(
     let cave = caves.get(current_position).unwrap();
 
     if cave.small {
-        if allow_double_visit && visited.contains(&current_position.to_string()) {
-            allow_double_visit = false;
+        let has_been_visited = visited.contains(&current_position);
+        if has_been_visited {
+            if allow_double_visit {
+                allow_double_visit = false;
+            } else {
+                return 0;
+            }
         }
 
-        visited.push(current_position.to_string());
+        visited.push(current_position);
     }
 
-    let edges_to_visit: Vec<&String> = cave
-        .edges
-        .iter()
-        .filter(|next_position| !visited.contains(next_position) || allow_double_visit)
-        .collect();
-
     let mut sum = 0;
-    for edge in edges_to_visit {
+    for edge in cave.edges.iter() {
         sum += traverse_all_routes(caves, edge, visited, allow_double_visit);
     }
 
