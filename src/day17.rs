@@ -47,7 +47,6 @@ fn hits(mut vx: i32, mut vy: i32, bounds: &[i32; 4]) -> bool {
 fn parse() -> [i32; 4] {
     let region = fs::read_to_string("inputs/day17.txt").unwrap();
     let r: Vec<_> = region[15..]
-        .replace("target area: x=", "")
         .replace(", y=", " ")
         .replace("..", " ")
         .split_whitespace()
