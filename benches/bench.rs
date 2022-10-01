@@ -1,11 +1,8 @@
-use std::time::Duration;
-
 use aoc_rust::*;
 use criterion::{criterion_group, criterion_main, Criterion};
 
 fn criterion_benchmark(c: &mut Criterion) {
     let mut group = c.benchmark_group("All days");
-    group.measurement_time(Duration::from_secs(20));
 
     // group.bench_function("Day 1", |b| b.iter(day1::run));
     // group.bench_function("Day 2", |b| b.iter(day2::run));
@@ -18,11 +15,13 @@ fn criterion_benchmark(c: &mut Criterion) {
     // group.bench_function("Day 9", |b| b.iter(day9::run));
     // group.bench_function("Day 10", |b| b.iter(day10::run));
     // group.bench_function("Day 11", |b| b.iter(day11::run));
-    group.bench_function("Day 12", |b| b.iter(day12::run));
+    // group.bench_function("Day 12", |b| b.iter(day12::run));
+    // group.bench_function("Day 12 ref_cell", |b| b.iter(day12_ref_cell::run));
     // group.bench_function("Day 13", |b| b.iter(day13::run));
     // group.bench_function("Day 14", |b| b.iter(day14::run));
     // group.bench_function("Day 15", |b| b.iter(day15::run));
     // group.bench_function("Day 16", |b| b.iter(day16::run));
+    group.bench_function("Day 17", |b| b.iter(day17::run));
 
     // group.bench_function("All days", |b| {
     //     b.iter(day1::run);
