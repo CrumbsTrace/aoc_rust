@@ -9,6 +9,7 @@ edition = "2021"
 ndarray = "0.15.6"
 rustc-hash = "1.1.0"
 regex = "1.6.0"
+itertools = "0.10"
 
 [dev-dependencies]
 criterion = "0.4.0"
