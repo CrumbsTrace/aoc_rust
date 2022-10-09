@@ -1,8 +1,7 @@
-use std::{collections::HashSet, fs};
 use itertools::Itertools;
+use std::{collections::HashSet, fs};
 
 type Pos = (i32, i32, i32);
-
 
 pub fn run() {
     let scanners = parse();
@@ -12,7 +11,10 @@ pub fn run() {
         .flat_map(|s| s.beacons.iter().map(|b| b.relative_position))
         .unique()
         .count();
-    let scanner_positions: Vec<Pos> = solved_scanners.iter().map(|s| s.position.unwrap()).collect();
+    let scanner_positions: Vec<Pos> = solved_scanners
+        .iter()
+        .map(|s| s.position.unwrap())
+        .collect();
     let p2 = maximum_distance(&scanner_positions);
 
     // println!("Part 1: {}", p1);
@@ -30,7 +32,6 @@ fn maximum_distance(positions: &[Pos]) -> i32 {
             if dist > maximum_distance {
                 maximum_distance = dist
             }
-
         }
     }
     maximum_distance
@@ -39,71 +40,107 @@ fn maximum_distance(positions: &[Pos]) -> i32 {
 fn solve(scanners: &[Scanner]) -> Vec<Scanner> {
     let mut scanner_zero = scanners[0].clone();
     scanner_zero.position = Some((0, 0, 0));
-    scanner_zero.solved_beacon_positions = Some(scanner_zero.beacons.iter().map(|b| b.relative_position).collect());
-    let mut solved = vec![scanner_zero];
+    scanner_zero.solved_beacon_positions = Some(
+        scanner_zero
+            .beacons
+            .iter()
+            .map(|b| b.relative_position)
+            .collect(),
+    );
+    let mut solved = Vec::new();
+    let mut to_try = vec![scanner_zero];
     let mut unsolved = scanners[1..].to_vec();
 
-    while !unsolved.is_empty() {
-        for i in 0..unsolved.len() {
-            let maybe_scanner = solve_scanner(&unsolved[i], &solved);
+    while !to_try.is_empty() {
+        let mut new_to_try: Vec<Scanner> = Vec::new();
+        let mut unsolved_to_remove: Vec<usize> = Vec::new();
+        for (i, unsolved_scanner) in unsolved.iter().enumerate() {
+            let maybe_scanner = solve_scanner(unsolved_scanner, &to_try);
 
             if let Some(solved_scanner) = maybe_scanner {
-                solved.push(solved_scanner);
-                unsolved.remove(i);
-                break;
+                new_to_try.push(solved_scanner.clone());
+                unsolved_to_remove.push(i)
             }
+        }
+        solved.append(&mut to_try);
+        to_try = new_to_try;
+        for i in unsolved_to_remove.iter().rev() {
+            unsolved.remove(*i);
         }
     }
     solved
 }
 
 fn solve_scanner(scanner: &Scanner, solved: &[Scanner]) -> Option<Scanner> {
-    for beacon in scanner.beacons.iter() {
+    for i in 0..(scanner.beacons.len() - 11) {
         for solved_scanner in solved {
-            let maybe_solved_beacon = solved_scanner.beacons
-                .iter()
-                .find(|s_b| {
-                s_b.edge_distances.intersection(&beacon.edge_distances).count() >= 12
+            let maybe_solved_beacon = solved_scanner.beacons.iter().find(|s_b| {
+                s_b.edge_distances
+                    .intersection(&scanner.beacons[i].edge_distances)
+                    .count()
+                    >= 12
             });
 
             if let Some(solved_beacon) = maybe_solved_beacon {
-                return determine_orientation(beacon, solved_beacon, scanner, solved_scanner)
+                return determine_orientation(&scanner.beacons[i], solved_beacon, scanner, solved_scanner);
             }
         }
     }
     None
 }
 
-fn determine_orientation(beacon: &Beacon, solved_beacon: &Beacon, scanner: &Scanner, solved_scanner: &Scanner) -> Option<Scanner> {
+fn determine_orientation(
+    beacon: &Beacon,
+    solved_beacon: &Beacon,
+    scanner: &Scanner,
+    solved_scanner: &Scanner,
+) -> Option<Scanner> {
     let solved_positions = solved_scanner.solved_beacon_positions.as_ref().unwrap();
     ORIENTATION_FUNCTIONS
-        .map(|f| (f, offset(&f(beacon.relative_position), &solved_beacon.relative_position)))
+        .map(|f| {
+            (
+                f,
+                offset(
+                    &f(beacon.relative_position),
+                    &solved_beacon.relative_position,
+                ),
+            )
+        })
         .iter()
         .find(|(f, o)| {
-            scanner.beacons.iter().map(|b| offset(&f(b.relative_position), o)).fold(0, |acc, p| {
-                if solved_positions.contains(&p) {
-                    acc + 1
-                } else {
-                    acc
-                }
-            }) >= 12
-        })
-        .map(|orientation| {
-            Scanner {
-                position: Some(orientation.1),
-                beacons: scanner.beacons.iter().map(|b| {
-                    Beacon {
-                        relative_position: offset(&orientation.0(b.relative_position), &orientation.1),
-                        edge_distances: b.edge_distances.clone()
+            scanner
+                .beacons
+                .iter()
+                .map(|b| offset(&f(b.relative_position), o))
+                .fold(0, |acc, p| {
+                    if solved_positions.contains(&p) {
+                        acc + 1
+                    } else {
+                        acc
                     }
-                }).collect(),
-                solved_beacon_positions: Some(scanner.beacons.iter().cloned().map(|b| {
-                    offset(&orientation.0(b.relative_position), &orientation.1)
-                }).collect())
-            }
+                })
+                >= 12
+        })
+        .map(|orientation| Scanner {
+            position: Some(orientation.1),
+            beacons: scanner
+                .beacons
+                .iter()
+                .map(|b| Beacon {
+                    relative_position: offset(&orientation.0(b.relative_position), &orientation.1),
+                    edge_distances: b.edge_distances.clone(),
+                })
+                .collect(),
+            solved_beacon_positions: Some(
+                scanner
+                    .beacons
+                    .iter()
+                    .cloned()
+                    .map(|b| offset(&orientation.0(b.relative_position), &orientation.1))
+                    .collect(),
+            ),
         })
 }
-
 
 fn parse() -> Vec<Scanner> {
     let input = fs::read_to_string("inputs/day19.txt").unwrap();
@@ -130,7 +167,7 @@ fn manhattan(p1: &Pos, p2: &Pos) -> i32 {
 struct Scanner {
     position: Option<Pos>,
     beacons: Vec<Beacon>,
-    solved_beacon_positions: Option<HashSet<Pos>>
+    solved_beacon_positions: Option<HashSet<Pos>>,
 }
 
 impl Scanner {
@@ -148,7 +185,7 @@ impl Scanner {
             .collect();
 
         let mut beacons = Vec::with_capacity(beacon_positions.len());
-        let mut distances: Vec<i32> = vec![0;beacon_positions.len()];
+        let mut distances: Vec<i32> = vec![0; beacon_positions.len()];
 
         for b1 in &beacon_positions {
             for (j, b2) in beacon_positions.iter().enumerate() {
@@ -156,12 +193,15 @@ impl Scanner {
             }
             beacons.push(Beacon {
                 edge_distances: distances.iter().cloned().collect(),
-                relative_position: *b1
+                relative_position: *b1,
             })
         }
 
-        Scanner { position: None, beacons, solved_beacon_positions: None }
-
+        Scanner {
+            position: None,
+            beacons,
+            solved_beacon_positions: None,
+        }
     }
 }
 
@@ -171,30 +211,29 @@ struct Beacon {
     edge_distances: HashSet<i32>,
 }
 
-const ORIENTATION_FUNCTIONS: [&dyn Fn(Pos) -> Pos ; 24] = 
-    [
-        &|(x, y, z): Pos| (x, y, z),
-        &|(x, y, z): Pos| (x, -z, y),
-        &|(x, y, z): Pos| (x, -y, -z),
-        &|(x, y, z): Pos| (x, z, -y),
-        &|(x, y, z): Pos| (-x, -y, z),
-        &|(x, y, z): Pos| (-x, -z, -y),
-        &|(x, y, z): Pos| (-x, y, -z),
-        &|(x, y, z): Pos| (-x, z, y),
-        &|(x, y, z): Pos| (y, -z, -x),
-        &|(x, y, z): Pos| (y, z, x),
-        &|(x, y, z): Pos| (y, -x, z),
-        &|(x, y, z): Pos| (y, x, -z),
-        &|(x, y, z): Pos| (-y, x, z),
-        &|(x, y, z): Pos| (-y, -x, -z),
-        &|(x, y, z): Pos| (-y, -z, x),
-        &|(x, y, z): Pos| (-y, z, -x),
-        &|(x, y, z): Pos| (z, x, y),
-        &|(x, y, z): Pos| (z, -x, -y),
-        &|(x, y, z): Pos| (z, -y, x),
-        &|(x, y, z): Pos| (z, y, -x),
-        &|(x, y, z): Pos| (-z, x, -y),
-        &|(x, y, z): Pos| (-z, -x, y),
-        &|(x, y, z): Pos| (-z, y, x),
-        &|(x, y, z): Pos| (-z, -y, -x),
-    ];
+const ORIENTATION_FUNCTIONS: [&dyn Fn(Pos) -> Pos; 24] = [
+    &|(x, y, z): Pos| (x, y, z),
+    &|(x, y, z): Pos| (x, -z, y),
+    &|(x, y, z): Pos| (x, -y, -z),
+    &|(x, y, z): Pos| (x, z, -y),
+    &|(x, y, z): Pos| (-x, -y, z),
+    &|(x, y, z): Pos| (-x, -z, -y),
+    &|(x, y, z): Pos| (-x, y, -z),
+    &|(x, y, z): Pos| (-x, z, y),
+    &|(x, y, z): Pos| (y, -z, -x),
+    &|(x, y, z): Pos| (y, z, x),
+    &|(x, y, z): Pos| (y, -x, z),
+    &|(x, y, z): Pos| (y, x, -z),
+    &|(x, y, z): Pos| (-y, x, z),
+    &|(x, y, z): Pos| (-y, -x, -z),
+    &|(x, y, z): Pos| (-y, -z, x),
+    &|(x, y, z): Pos| (-y, z, -x),
+    &|(x, y, z): Pos| (z, x, y),
+    &|(x, y, z): Pos| (z, -x, -y),
+    &|(x, y, z): Pos| (z, -y, x),
+    &|(x, y, z): Pos| (z, y, -x),
+    &|(x, y, z): Pos| (-z, x, -y),
+    &|(x, y, z): Pos| (-z, -x, y),
+    &|(x, y, z): Pos| (-z, y, x),
+    &|(x, y, z): Pos| (-z, -y, -x),
+];

@@ -16,15 +16,14 @@ pub fn p2(bounds: &[i32; 4]) -> i32 {
     let lower_bound_x = (bounds[0] as f32).sqrt() as i32;
     let higher_bound_y = (bounds[2] + 1).abs();
 
-    let result = (lower_bound_x..=bounds[1]).fold(0, |acc, vx| {
+    (lower_bound_x..=bounds[1]).fold(0, |acc, vx| {
         (bounds[2]..=higher_bound_y).fold(acc, |acc2, vy| {
             if hits(vx, vy, bounds) {
                 return acc2 + 1;
             }
             acc2
         })
-    });
-    result
+    })
 }
 
 fn hits(mut vx: i32, mut vy: i32, bounds: &[i32; 4]) -> bool {
@@ -35,13 +34,13 @@ fn hits(mut vx: i32, mut vy: i32, bounds: &[i32; 4]) -> bool {
         px += vx;
         py += vy;
         vx = max(vx - 1, 0);
-        vy = vy - 1;
+        vy -= 1;
 
         if px >= bounds[0] && px <= bounds[1] && py >= bounds[2] && py <= bounds[3] {
             return true;
         }
     }
-    return false;
+    false
 }
 
 fn parse() -> [i32; 4] {

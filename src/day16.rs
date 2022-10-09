@@ -8,8 +8,7 @@ pub fn run() {
         .unwrap()
         .chars()
         .map(|c| c.to_digit(16).unwrap() as u8)
-        .map(hex_to_bin)
-        .flatten()
+        .flat_map(hex_to_bin)
         .collect::<Vec<_>>();
 
     let packet = Packet::read_packet_bits(&bits);
