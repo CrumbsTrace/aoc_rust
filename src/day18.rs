@@ -36,11 +36,14 @@ fn p2() {
         })
         .permutations(2)
         .map(|perm| {
-            let r = perm.into_iter().reduce(|left, right| {
-                let mut snailfish = Box::new(SnailFish::List(left, right));
-                evaluate(&mut snailfish);
-                snailfish
-            }).unwrap();
+            let r = perm
+                .into_iter()
+                .reduce(|left, right| {
+                    let mut snailfish = Box::new(SnailFish::List(left, right));
+                    evaluate(&mut snailfish);
+                    snailfish
+                })
+                .unwrap();
             magnitude(&r)
         })
         .max()

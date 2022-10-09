@@ -3,7 +3,7 @@ use criterion::{criterion_group, criterion_main, Criterion};
 
 fn criterion_benchmark(c: &mut Criterion) {
     let mut group = c.benchmark_group("All days");
-    group.measurement_time(std::time::Duration::from_secs(10));
+    // group.measurement_time(std::time::Duration::from_secs(60));
 
     // group.bench_function("Day 1", |b| b.iter(day1::run));
     // group.bench_function("Day 2", |b| b.iter(day2::run));
@@ -23,7 +23,8 @@ fn criterion_benchmark(c: &mut Criterion) {
     // group.bench_function("Day 15", |b| b.iter(day15::run));
     // group.bench_function("Day 16", |b| b.iter(day16::run));
     // group.bench_function("Day 17", |b| b.iter(day17::run));
-    group.bench_function("Day 18", |b| b.iter(day18::run));
+    // group.bench_function("Day 18", |b| b.iter(day18::run));
+    group.bench_function("Day 19", |b| b.iter(day19::run));
 
     group.finish();
 }
