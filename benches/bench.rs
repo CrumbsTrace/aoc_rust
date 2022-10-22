@@ -3,9 +3,8 @@ use criterion::{criterion_group, criterion_main, Criterion};
 
 fn criterion_benchmark(c: &mut Criterion) {
     let mut group = c.benchmark_group("All days");
-    group.measurement_time(std::time::Duration::from_secs(20));
-    group.sample_size(50);
-
+    // group.measurement_time(std::time::Duration::from_secs(20));
+    // group.sample_size(50);
     // group.bench_function("Day 1", |b| b.iter(day1::run));
     // group.bench_function("Day 2", |b| b.iter(day2::run));
     // group.bench_function("Day 3", |b| b.iter(day3::run));
@@ -26,7 +25,34 @@ fn criterion_benchmark(c: &mut Criterion) {
     // group.bench_function("Day 17", |b| b.iter(day17::run));
     // group.bench_function("Day 18", |b| b.iter(day18::run));
     // group.bench_function("Day 19", |b| b.iter(day19::run));
-    group.bench_function("Day 20", |b| b.iter(day20::run));
+    // group.bench_function("Day 20", |b| b.iter(day20::run));
+
+    group.measurement_time(std::time::Duration::from_secs(300));
+    group.sample_size(100);
+    group.bench_function("Runtime", |b| {
+        b.iter(|| {
+            day1::run();
+            day2::run();
+            day3::run();
+            day4::run();
+            day5::run();
+            day6::run();
+            day7::run();
+            day8::run();
+            day9::run();
+            day10::run();
+            day11::run();
+            day12::run();
+            day13::run();
+            day14::run();
+            day15::run();
+            day16::run();
+            day17::run();
+            day18::run();
+            day19::run();
+            day20::run();
+        });
+    });
 
     group.finish();
 }
