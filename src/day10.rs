@@ -2,6 +2,7 @@ use std::fs;
 
 const OPENING_BRACKETS: [char; 4] = ['(', '{', '[', '<'];
 
+#[divan::bench] 
 pub fn run() {
     let input = fs::read_to_string("inputs/day10.txt").unwrap();
     let lines: Vec<Vec<char>> = input.lines().map(|line| line.chars().collect()).collect();

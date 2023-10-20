@@ -1,5 +1,6 @@
 use std::fs;
 
+#[divan::bench] 
 pub fn run() {
     let input = fs::read_to_string("inputs/day7.txt").unwrap();
     let mut crabs = input

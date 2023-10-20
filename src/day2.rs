@@ -1,4 +1,6 @@
 use std::fs;
+
+#[divan::bench] 
 pub fn run() {
     let (p1, p2) = follow_instructions();
     // println!("Part 1: {:?}", p1);

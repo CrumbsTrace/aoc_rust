@@ -1,5 +1,6 @@
 use std::fs;
 
+#[divan::bench] 
 pub fn run() {
     let input = fs::read_to_string("inputs/day6.txt").unwrap();
     let mut fish: [u64; 9] = [0, 0, 0, 0, 0, 0, 0, 0, 0];

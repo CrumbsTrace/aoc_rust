@@ -1,6 +1,7 @@
 use rustc_hash::FxHashMap;
 use std::fs;
 
+#[divan::bench] 
 pub fn run() {
     let mut caves = FxHashMap::default();
 

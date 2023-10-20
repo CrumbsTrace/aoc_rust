@@ -4,6 +4,7 @@ use std::{
     fs,
 };
 
+#[divan::bench] 
 pub fn run() {
     p1();
     p2();

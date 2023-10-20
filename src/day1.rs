@@ -1,5 +1,6 @@
 use std::fs;
 
+#[divan::bench] 
 pub fn run() {
     let lines: Vec<i32> = fs::read_to_string("inputs/day1.txt")
         .unwrap()

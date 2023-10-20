@@ -2,6 +2,7 @@ use std::{collections::HashSet, fs};
 
 type Digit = HashSet<char>;
 
+#[divan::bench] 
 pub fn run() {
     let input = fs::read_to_string("inputs/day8.txt").unwrap();
     let lines: Vec<Vec<Digit>> = input

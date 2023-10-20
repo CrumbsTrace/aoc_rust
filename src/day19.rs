@@ -3,6 +3,7 @@ use std::{collections::HashSet, fs};
 
 type Pos = (i32, i32, i32);
 
+#[divan::bench] 
 pub fn run() {
     let scanners = parse();
     let solved_scanners = solve(&scanners);

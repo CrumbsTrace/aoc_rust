@@ -1,5 +1,6 @@
 use std::{collections::HashSet, fs};
 
+#[divan::bench] 
 pub fn run() {
     let input = fs::read_to_string("inputs/day13.txt").unwrap();
 

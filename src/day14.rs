@@ -1,5 +1,6 @@
 use std::{collections::HashMap, fs};
 
+#[divan::bench] 
 pub fn run() {
     let input = fs::read_to_string("inputs/day14.txt").unwrap();
     let lines = input.lines().collect::<Vec<&str>>();

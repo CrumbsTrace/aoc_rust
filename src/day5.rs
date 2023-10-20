@@ -3,6 +3,7 @@ use std::{collections::HashMap, fs};
 type Point = (i32, i32);
 type Pipe = (Point, Point);
 
+#[divan::bench] 
 pub fn run() {
     let input = fs::read_to_string("inputs/day5.txt").unwrap();
     let pipes: Vec<Pipe> = input

@@ -1,6 +1,7 @@
 use ndarray::Array2;
 use std::fs;
 
+#[divan::bench] 
 pub fn run() {
     let input = fs::read_to_string("inputs/day9.txt").unwrap();
     let lines: Vec<Vec<char>> = input.lines().map(|line| line.chars().collect()).collect();

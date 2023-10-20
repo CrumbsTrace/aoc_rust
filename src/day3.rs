@@ -1,4 +1,6 @@
 use std::fs;
+
+#[divan::bench] 
 pub fn run() {
     let input = fs::read_to_string("inputs/day3.txt").unwrap();
     let lines: Vec<Vec<char>> = input.lines().map(|line| line.chars().collect()).collect();

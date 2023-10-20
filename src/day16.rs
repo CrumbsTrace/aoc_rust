@@ -1,5 +1,6 @@
 use std::{collections::VecDeque, fs, vec};
 
+#[divan::bench] 
 pub fn run() {
     let bits = fs::read_to_string("inputs/day16.txt")
         .unwrap()

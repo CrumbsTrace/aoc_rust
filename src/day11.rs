@@ -1,6 +1,7 @@
 use ndarray::Array2;
 use std::{fmt, fs};
 
+#[divan::bench] 
 pub fn run() {
     let input = fs::read_to_string("inputs/day11.txt").unwrap();
     //read all digits in input into Array2

@@ -5,6 +5,7 @@ use itertools::Itertools;
 type Point = (usize, usize);
 type Bounds = (usize, usize, usize, usize);
 
+#[divan::bench] 
 pub fn run() {
     let (enchancement_lookup, image, bounds) = parse();
     let p1 = run_cycles(image, &enchancement_lookup, bounds, 2);
@@ -115,7 +116,6 @@ fn bounds(image: &HashSet<Point>) -> Bounds {
 }
 
 #[allow(dead_code)]
-#[allow(clippy::needless_range_loop)]
 fn print_image(image: &[[bool; 300]; 300], (x1, x2, y1, y2): Bounds) {
     for y in y1..=y2 {
         for x in x1..=x2 {

@@ -4,6 +4,7 @@ use std::{
     fs,
 };
 
+#[divan::bench] 
 pub fn run() {
     let input = fs::read_to_string("inputs/day15.txt").unwrap();
     let lines: Vec<Vec<i32>> = input

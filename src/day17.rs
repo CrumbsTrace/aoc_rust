@@ -1,6 +1,7 @@
 use regex::Regex;
 use std::{cmp::max, fs};
 
+#[divan::bench] 
 pub fn run() {
     let bounds = parse();
     let y_min = bounds[2];
