@@ -31,15 +31,15 @@ fn p2(lines: &[Vec<char>]) -> usize {
     for i in 0..length {
         if o2_list.len() > 1 {
             match one_most_common(&o2_list, i) {
-                true => o2_list = o2_list.into_iter().filter(|line| line[i] == '1').collect(),
-                false => o2_list = o2_list.into_iter().filter(|line| line[i] == '0').collect(),
+                true => o2_list.retain(|line| line[i] == '1'),
+                false => o2_list.retain(|line| line[i] == '0'),
             }
         }
 
         if co2_list.len() > 1 {
             match one_most_common(&co2_list, i) {
-                true => co2_list = co2_list.into_iter().filter(|line| line[i] == '0').collect(),
-                false => co2_list = co2_list.into_iter().filter(|line| line[i] == '1').collect(),
+                true => co2_list.retain(|line| line[i] == '0'),
+                false => co2_list.retain(|line| line[i] == '1'),
             }
         }
     }

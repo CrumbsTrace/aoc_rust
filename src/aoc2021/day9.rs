@@ -79,8 +79,7 @@ fn get_basin(grid: &Array2<u32>, x: usize, y: usize) -> Vec<[usize; 2]> {
     let mut connected = vec![[x, y]];
     let mut to_visit = vec![[x, y]];
 
-    while !to_visit.is_empty() {
-        let [x, y] = to_visit.pop().unwrap();
+    while let Some([x, y]) = to_visit.pop() {
         let neighbors = neighbors(grid.shape()[0], grid.shape()[1], x as i32, y as i32);
 
         for [i, j] in neighbors {

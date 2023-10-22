@@ -42,7 +42,7 @@ impl Packet {
     fn read_packet_bits(bits: &[u8]) -> Packet {
         let mut packets = Vec::new();
         let version = bits[0..=2].iter().fold(0, |acc, &b| acc * 2 + b as u32);
-        let type_id = bits[3..=5].iter().fold(0, |acc, &b| acc * 2 + b as u8);
+        let type_id = bits[3..=5].iter().fold(0, |acc, &b| acc * 2 + b);
         let mut length = 6;
         let value;
         let mut packet_bits: &[u8] = &bits[6..];

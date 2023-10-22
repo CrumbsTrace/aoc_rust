@@ -1,11 +1,11 @@
-use std::{fs, collections::HashSet};
+use std::{collections::HashSet, fs};
 
 use itertools::Itertools;
 
 type Point = (usize, usize);
 type Bounds = (usize, usize, usize, usize);
 
-#[divan::bench] 
+#[divan::bench]
 pub fn run() {
     let (enchancement_lookup, image, bounds) = parse();
     let p1 = run_cycles(image, &enchancement_lookup, bounds, 2);
@@ -43,7 +43,12 @@ fn parse() -> (Vec<bool>, [[bool; 300]; 300], Bounds) {
     (enhancement, image, bounds)
 }
 
-fn run_cycles(mut image: [[bool; 300]; 300], enchancement_lookup: &[bool], mut bounds: Bounds, cycles: i32) -> usize {
+fn run_cycles(
+    mut image: [[bool; 300]; 300],
+    enchancement_lookup: &[bool],
+    mut bounds: Bounds,
+    cycles: i32,
+) -> usize {
     let mut infinity_on = false;
     for _ in 0..cycles {
         image = update_image(&image, enchancement_lookup, bounds, infinity_on);
@@ -84,9 +89,7 @@ fn determine_index(
     let mut index = 0;
     for y in (py - 1)..=(py + 1) {
         for x in (px - 1)..=(px + 1) {
-            if image[y][x]
-                || (infinity_on && outside_bounds((x, y), bounds))
-            {
+            if image[y][x] || (infinity_on && outside_bounds((x, y), bounds)) {
                 index = (index << 1) | 1;
             } else {
                 index <<= 1;
@@ -117,15 +120,14 @@ fn bounds(image: &HashSet<Point>) -> Bounds {
 
 #[allow(dead_code)]
 fn print_image(image: &[[bool; 300]; 300], (x1, x2, y1, y2): Bounds) {
-    for y in y1..=y2 {
-        for x in x1..=x2 {
-            if image[y][x] {
+    for row in image.iter().take(y2 + 1).skip(y1) {
+        for v in row.iter().take(x2 + 1).skip(x1) {
+            if *v {
                 print!("#");
             } else {
-                print!(".");
+               print!(".");
             }
         }
         println!();
     }
 }
-
