@@ -4,14 +4,11 @@ use rayon::prelude::*;
 use std::fs;
 
 // MD5 can only really brute forced for this realistically
-// We use rayon of threading but it doesn't actually help due to the overhead of the threads
+// We use rayon for threading which is unnecessary here but was fun to implement
 pub fn run(mut input: &str, skip_p2: bool) -> (i32, i32) {
     input = input.trim();
 
-    let pool = rayon::ThreadPoolBuilder::new()
-        .num_threads(4)
-        .build()
-        .unwrap();
+    let pool = rayon::ThreadPoolBuilder::new().build().unwrap();
 
     pool.install(|| {
         let p1 = (0..i32::MAX)
@@ -59,7 +56,6 @@ fn real_input() {
 }
 
 #[divan::bench(threads = false)]
-#[ignore]
 fn bench(bencher: divan::Bencher) {
     let input = fs::read_to_string("inputs/2015/day4.txt").unwrap();
     bencher.bench(|| run(black_box(&input), false));
