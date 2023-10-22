@@ -11,6 +11,8 @@ rustc-hash = "1.1.0"
 regex = "1.6.0"
 itertools = "0.10"
 divan = "0.1.0"
+rayon = "1.8.0"
+md-5 = "0.10.6"
 
 [[bench]]
 name = "bench"
