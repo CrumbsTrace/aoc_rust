@@ -3,7 +3,7 @@ use md5::{Digest, Md5};
 use rayon::prelude::*;
 use std::fs;
 
-// MD5 can only really brute forced for this realistically
+// MD5 can only really be brute forced for this realistically
 // We use rayon for threading which is unnecessary here but was fun to implement
 pub fn run(mut input: &str, skip_p2: bool) -> (i32, i32) {
     input = input.trim();
