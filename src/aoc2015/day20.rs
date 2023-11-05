@@ -23,5 +23,5 @@ fn real_input() {
 
 #[divan::bench]
 fn bench(bencher: divan::Bencher) {
-    bencher.bench(|| run());
+    bencher.bench(run);
 }

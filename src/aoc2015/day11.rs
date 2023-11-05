@@ -10,16 +10,16 @@ pub fn run(input: &str) -> (String, String) {
     (p1, p2)
 }
 
-fn find_next_valid_password(mut password: &mut [u8]) {
+fn find_next_valid_password(password: &mut [u8]) {
     loop {
-        cycle_through_passwords(&mut password);
+        cycle_through_passwords(password);
         if is_valid_password(password) {
             break;
         }
     }
 }
 
-fn is_valid_password(password: &mut [u8]) -> bool {
+fn is_valid_password(password: &[u8]) -> bool {
     let mut found_straight = false;
     let mut pairs = 0;
     let mut last_pair = None;
@@ -28,16 +28,12 @@ fn is_valid_password(password: &mut [u8]) -> bool {
             return false;
         }
         if i > 0 {
-            if password[i] == password[i - 1] {
-                if last_pair.is_none() || last_pair.unwrap() != password[i] {
-                    pairs += 1;
-                    last_pair = Some(password[i]);
-                }
+            if password[i] == password[i - 1] && (last_pair.is_none() || last_pair.unwrap() != password[i]) {
+                pairs += 1;
+                last_pair = Some(password[i]);
             }
-            if i > 1 {
-                if password[i] == password[i - 1] + 1 && password[i] == password[i - 2] + 2 {
-                    found_straight = true;
-                }
+            if i > 1 && password[i] == password[i - 1] + 1 && password[i] == password[i - 2] + 2 {
+                found_straight = true;
             }
         }
     }

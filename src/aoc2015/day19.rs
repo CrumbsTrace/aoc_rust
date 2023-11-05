@@ -59,8 +59,8 @@ fn parse_replacements(input: &str) -> Vec<(String, String)> {
             let mut words = line.split_whitespace();
             let from = words.next()?;
             let to = words.nth(1)?;
-            let result = Some((from.to_string(), to.to_string()));
-            result
+            
+            Some((from.to_string(), to.to_string()))
         })
         .collect()
 }

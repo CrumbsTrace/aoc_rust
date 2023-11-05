@@ -11,7 +11,7 @@ pub fn run(input: &str, total: i32) -> (i32, i32) {
 }
 
 fn count_combinations(sorted_containers: &[i32], amount: i32, max_container_count: usize) -> i32 {
-    if sorted_containers.len() == 0 || max_container_count == 0 {
+    if sorted_containers.is_empty() || max_container_count == 0 {
         if amount == 0 {
             return 1;
         } else {
@@ -25,7 +25,7 @@ fn count_combinations(sorted_containers: &[i32], amount: i32, max_container_coun
 }
 
 fn minimum_containers(sorted_containers: &[i32], amount: i32, current_count: i32) -> i32 {
-    if sorted_containers.len() == 0 {
+    if sorted_containers.is_empty() {
         return i32::MAX;
     }
     if amount < sorted_containers[0] && amount != 0 {

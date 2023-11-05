@@ -20,7 +20,7 @@ pub fn run(input: &str) -> (u16, u16) {
         instructions = run_instructions(&instructions, &mut wires);
     }
 
-    let p1 = wires.get("a").unwrap().clone();
+    let p1 = *wires.get("a").unwrap();
 
     let mut wires = HashMap::<String, u16>::new();
     wires.insert("b".to_string(), p1);
@@ -28,7 +28,7 @@ pub fn run(input: &str) -> (u16, u16) {
     while !instructions.is_empty() {
         instructions = run_instructions(&instructions, &mut wires);
     }
-    let p2 = wires.get("a").unwrap().clone();
+    let p2 = *wires.get("a").unwrap();
 
     (p1, p2)
 }
@@ -40,18 +40,16 @@ fn run_instructions(
     let mut unparsed_instructions = Vec::new();
     for instruction in instructions {
         let (left, right) = instruction;
-        let mut left = left.split(" ");
+        let mut left = left.split(' ');
         let left1 = left.next();
-        let v1 = parse_wire_or_number(left1.unwrap(), &wires);
+        let v1 = parse_wire_or_number(left1.unwrap(), wires);
         let operator = if v1.is_some() {
             left.next()
+        } else if left1 == Some("NOT") {
+            left1
         } else {
-            if left1 == Some("NOT") {
-                left1
-            } else {
-                unparsed_instructions.push(instruction.clone());
-                continue;
-            }
+            unparsed_instructions.push(instruction.clone());
+            continue;
         };
 
         if operator.is_none() {
@@ -63,7 +61,7 @@ fn run_instructions(
 
         let v1 = v1.unwrap_or(0);
 
-        let v2 = parse_wire_or_number(left.next().unwrap(), &wires);
+        let v2 = parse_wire_or_number(left.next().unwrap(), wires);
         if v2.is_none() {
             unparsed_instructions.push(instruction.clone());
             continue;
@@ -88,7 +86,7 @@ fn parse_wire_or_number(s: &str, wires: &HashMap<String, u16>) -> Option<u16> {
         Err(_) => {
             let s = s.to_string();
             if wires.contains_key(&s) {
-                Some(wires.get(&s).unwrap().clone())
+                Some(*wires.get(&s).unwrap())
             } else {
                 None
             }

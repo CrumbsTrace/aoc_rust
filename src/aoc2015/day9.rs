@@ -28,7 +28,7 @@ fn get_minmax_path(cities: &[String], distance_graph: &HashMap<(String, String),
 fn build_graph(lines: &Vec<&str>) -> HashMap<(String, String), i32> {
     let mut graph = HashMap::new();
     for line in lines {
-        let mut line = line.split(" ");
+        let mut line = line.split(' ');
         let from = line.next().unwrap();
         let to = line.nth(1).unwrap();
         let distance = line.nth(1).unwrap().parse::<i32>().unwrap();

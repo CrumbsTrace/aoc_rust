@@ -36,12 +36,17 @@ pub fn run(input: &str, t: i32) -> (i32, i32) {
             if time % (reindeer.fly_time_in_seconds + reindeer.rest_time_in_seconds) < reindeer.fly_time_in_seconds {
                 distances[i] += reindeer.speed;
             }
-            if distances[i] > max_distance {
-                max_distance = distances[i];
-                winning_reindeers.clear();
-                winning_reindeers.push(i);
-            } else if distances[i] == max_distance {
-                winning_reindeers.push(i);
+
+            match distances[i].cmp(&max_distance) {
+                std::cmp::Ordering::Greater => {
+                    max_distance = distances[i];
+                    winning_reindeers.clear();
+                    winning_reindeers.push(i);
+                }
+                std::cmp::Ordering::Equal => {
+                    winning_reindeers.push(i);
+                }
+                std::cmp::Ordering::Less => {}
             }
         }
         for i in winning_reindeers.iter() {

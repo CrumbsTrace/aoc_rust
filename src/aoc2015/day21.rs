@@ -52,8 +52,8 @@ pub fn run(input: &str) -> (i32, i32) {
 }
 
 fn player_wins(player: &Entity, boss: &Entity) -> bool {
-    let mut player = player.clone();
-    let mut boss = boss.clone();
+    let mut player = *player;
+    let mut boss = *boss;
     loop {
         boss.hp -= (player.damage - boss.armor).max(1);
         if boss.hp <= 0 {
@@ -74,7 +74,7 @@ fn parse_boss(input: &str) -> Entity {
     Entity { hp, damage, armor }
 }
 
-fn next_line_split<'a>(line: Option<&'a str>) -> impl Iterator<Item = &'a str> {
+fn next_line_split(line: Option<&str>) -> impl Iterator<Item = &'_ str> {
     line.unwrap().split_whitespace()
 }
 
