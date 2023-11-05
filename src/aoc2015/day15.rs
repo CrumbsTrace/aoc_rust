@@ -93,4 +93,3 @@ fn bench(bencher: divan::Bencher) {
     let input = fs::read_to_string("inputs/2015/day15.txt").unwrap();
     bencher.bench(|| run(black_box(&input)));
 }
-
