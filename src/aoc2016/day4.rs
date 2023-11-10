@@ -18,7 +18,7 @@ pub fn run(input: &str) -> (i32, i32) {
         let most_common = counts
             .iter()
             .take(5)
-            .map(|(i, _)| (*i as u8 + 'a' as u8) as char)
+            .map(|(i, _)| (*i as u8 + b'a') as char)
             .collect::<String>();
 
         if most_common == checksum {
@@ -29,8 +29,8 @@ pub fn run(input: &str) -> (i32, i32) {
                 if c == '-' {
                     real_name.push(' ');
                 } else {
-                    let c = c as u8 - 'a' as u8;
-                    let c = ((c as i32 + sector_id) % 26) as u8 + 'a' as u8;
+                    let c = c as u8 - b'a';
+                    let c = ((c as i32 + sector_id) % 26) as u8 + b'a';
                     real_name.push(c as char);
                 }
             }
