@@ -8,37 +8,33 @@ use std::fs;
 pub fn run(mut input: &str, skip_p2: bool) -> (i32, i32) {
     input = input.trim();
 
-    let pool = rayon::ThreadPoolBuilder::new().build().unwrap();
+    let p1 = (0..i32::MAX)
+        .into_par_iter()
+        .find_first(|i| {
+            let mut hasher = Md5::new();
+            hasher.update(input.as_bytes());
+            hasher.update(i.to_string().as_bytes());
+            let output = hasher.finalize();
+            output[0] == 0 && output[1] == 0 && output[2] < 16
+        })
+        .unwrap();
 
-    pool.install(|| {
-        let p1 = (0..i32::MAX)
+    let mut p2 = 0;
+
+    if !skip_p2 {
+        p2 = (p1..i32::MAX)
             .into_par_iter()
             .find_first(|i| {
                 let mut hasher = Md5::new();
                 hasher.update(input.as_bytes());
                 hasher.update(i.to_string().as_bytes());
                 let output = hasher.finalize();
-                output[0] == 0 && output[1] == 0 && output[2] < 16
+                output[0] == 0 && output[1] == 0 && output[2] == 0
             })
             .unwrap();
+    }
 
-        let mut p2 = 0;
-
-        if !skip_p2 {
-            p2 = (p1..i32::MAX)
-                .into_par_iter()
-                .find_first(|i| {
-                    let mut hasher = Md5::new();
-                    hasher.update(input.as_bytes());
-                    hasher.update(i.to_string().as_bytes());
-                    let output = hasher.finalize();
-                    output[0] == 0 && output[1] == 0 && output[2] == 0
-                })
-                .unwrap();
-        }
-
-        (p1, p2)
-    })
+    (p1, p2)
 }
 
 #[test]
@@ -58,5 +54,6 @@ fn real_input() {
 #[divan::bench(threads = false)]
 fn bench(bencher: divan::Bencher) {
     let input = fs::read_to_string("inputs/2015/day4.txt").unwrap();
-    bencher.bench(|| run(black_box(&input), false));
+    rayon::ThreadPoolBuilder::new().num_threads(1).build_global().unwrap();
+    bencher.bench_local(|| run(black_box(&input), false));
 }
