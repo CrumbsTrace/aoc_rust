@@ -3,7 +3,7 @@ use rayon::prelude::*;
 pub fn run(mut input: &str) -> (String, String) {
     input = input.trim();
     let mut p1 = String::new();
-    let mut p2 = vec!['_'; 8];
+    let mut p2 = ['_'; 8];
     //Precalculate 30_000_000 hashes
     let hashes = (0..30_000_000)
         .into_par_iter()
