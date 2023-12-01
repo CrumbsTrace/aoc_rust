@@ -13,32 +13,26 @@ const DIGITS: [(&str, &str); 9] = [
 pub fn run(input: &str) -> (u32, u32) {
     let mut p1 = 0;
     let mut p2 = 0;
-    let mut digits_p1 = vec![];
-    let mut digits_p2 = vec![];
     for line in input.lines() {
-        collect_digits(line, &mut digits_p1, &mut digits_p2);
-        p1 += digits_p1[0] * 10 + digits_p1[digits_p1.len() - 1];
-        p2 += digits_p2[0] * 10 + digits_p2[digits_p2.len() - 1];
-        digits_p1.clear();
-        digits_p2.clear();
+        p1 += get_digit(line, false, false) * 10 + get_digit(line, true, false);
+        p2 += get_digit(line, false, true) * 10 + get_digit(line, true, true);
     }
     (p1, p2)
 }
 
-fn collect_digits(mut line: &str, digits_p1: &mut Vec<u32>, digits_p2: &mut Vec<u32>) {
-    while !line.is_empty() {
-        if let Some((_, digit)) = DIGITS.iter().find(|(word, digit)| line.starts_with(word) || line.starts_with(digit))
-        {
-            let parsed_digit = digit.parse::<u32>().unwrap();
-            if line.starts_with(digit) {
-                digits_p1.push(parsed_digit);
-            }
-            digits_p2.push(parsed_digit);
+fn get_digit(line: &str, last: bool, p2: bool) -> u32 {
+    if line.is_empty() {
+        0
+    } else if last {
+        if let Some((_, digit)) = DIGITS.iter().find(|(word, digit)| line.ends_with(digit) || (p2 && line.ends_with(word))) {
+            return digit.parse().unwrap();
         }
-        line = &line[1..];
-    }
-    if digits_p1.is_empty() {
-        digits_p1.push(0)
+        get_digit(&line[..line.len() - 1], last, p2)
+    } else {
+        if let Some((_, digit)) = DIGITS.iter().find(|(word, digit)| line.starts_with(digit) || (p2 && line.starts_with(word))) {
+            return digit.parse().unwrap();
+        }
+        get_digit(&line[1..], last, p2)
     }
 }
 
