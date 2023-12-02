@@ -1,28 +1,28 @@
-use std::collections::HashMap;
-
 pub fn run(input: &str) -> (usize, u32) {
     input
         .lines()
         .enumerate()
         .fold((0, 0), |(p1, p2), (i, line)| {
-            let mut max_color_counts = HashMap::new();
+            let mut max_color_counts = [0; 3];
             let mut game = line.split(':');
             for sample in game.nth(1).unwrap().split(';') {
                 for cube in sample.split(',') {
                     let mut split = cube.split_whitespace();
                     let count = split.next().unwrap().parse().unwrap();
                     let color = split.next().unwrap();
-                    max_color_counts
-                        .entry(color)
-                        .and_modify(|e: &mut u32| *e = (*e).max(count))
-                        .or_insert(count);
+                    match color {
+                        "red" => max_color_counts[0] = max_color_counts[0].max(count),
+                        "green" => max_color_counts[1] = max_color_counts[1].max(count),
+                        "blue" => max_color_counts[2] = max_color_counts[2].max(count),
+                        _ => unreachable!(),
+                    }
                 }
             }
 
-            let power = max_color_counts.values().product::<u32>();
-            if *max_color_counts.get("red").unwrap_or(&0) <= 12
-                && *max_color_counts.get("green").unwrap_or(&0) <= 13
-                && *max_color_counts.get("blue").unwrap_or(&0) <= 14
+            let power = max_color_counts.iter().product::<u32>();
+            if max_color_counts[0] <= 12
+                && max_color_counts[1] <= 13
+                && max_color_counts[2] <= 14
             {
                 (p1 + i + 1, p2 + power)
             } else {
