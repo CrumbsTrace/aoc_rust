@@ -1,5 +1,5 @@
 use ndarray::prelude::*;
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 
 pub fn run(input: &str) -> (u32, u32) {
     let grid_input = input.lines().collect::<Vec<_>>();
@@ -12,97 +12,82 @@ pub fn run(input: &str) -> (u32, u32) {
     )
     .unwrap();
 
-    let mut count = 0;
+    let mut p1 = 0;
     let mut gear_adjacent_parts = HashMap::new();
     for (y, row) in grid.outer_iter().enumerate() {
-        let mut in_number = false;
-        let mut part_number = 0;
-        let mut is_adjacent_to_symbol = false;
-        let mut adjacent_gears = HashSet::new();
-        for (x, &cell) in row.iter().enumerate() {
+        let mut x = 0;
+        while x < row.len() {
+            let cell = row[x];
+            let mut part_number = 0;
+            let mut x_end = x + 1;
             if cell.is_ascii_digit() {
-                if !in_number {
-                    in_number = true;
+                part_number = cell.to_digit(10).unwrap();
+                while x_end < row.len() && row[x_end].is_ascii_digit() {
+                    part_number = part_number * 10 + row[x_end].to_digit(10).unwrap();
+                    x_end += 1;
                 }
+            }
 
-                part_number = part_number * 10 + cell.to_digit(10).unwrap();
-                for i in -1..=1 {
-                    for j in -1..=1 {
-                        if i == 0 && j == 0 {
+            if part_number > 0 {
+                let adjacent_symbols = adjacent_symbols(x, x_end - 1, y, &grid);
+                if !adjacent_symbols.is_empty() {
+                    p1 += part_number;
+                    for (x_adj, y_adj, symbol) in adjacent_symbols {
+                        if symbol != '*' {
                             continue;
                         }
-                        let (x2, y2) = (x as i32 + i, y as i32 + j);
-                        if let Some(&cell2) = grid.get((y2 as usize, x2 as usize)) {
-                            if cell2 != '.' && !cell2.is_ascii_digit() {
-                                is_adjacent_to_symbol = true;
-                                if cell2 == '*' {
-                                    adjacent_gears.insert((x2, y2));
-                                }
-                            }
-                        }
+                        gear_adjacent_parts
+                            .entry((x_adj, y_adj))
+                            .or_insert_with(Vec::new)
+                            .push(part_number);
                     }
                 }
-            } else if in_number {
-                if is_adjacent_to_symbol {
-                    update_parts(
-                        &mut count,
-                        part_number,
-                        &adjacent_gears,
-                        &mut gear_adjacent_parts,
-                    );
-                }
-                part_number = 0;
-                in_number = false;
-                is_adjacent_to_symbol = false;
-                adjacent_gears.clear();
+                x = x_end;
             }
-        }
-        if in_number && is_adjacent_to_symbol {
-            update_parts(
-                &mut count,
-                part_number,
-                &adjacent_gears,
-                &mut gear_adjacent_parts,
-            );
+            x += 1;
         }
     }
 
-    let gear_ratio_sum = gear_adjacent_parts
+    let p2 = gear_adjacent_parts
         .values()
         .filter(|parts| parts.len() == 2)
         .map(|parts| parts.iter().product::<u32>())
         .sum::<u32>();
 
-    (count, gear_ratio_sum)
+    (p1, p2)
 }
 
-fn update_parts(
-    count: &mut u32,
-    part_number: u32,
-    adjacent_gears: &HashSet<(i32, i32)>,
-    gear_adjacent_parts: &mut HashMap<(i32, i32), Vec<u32>>,
-) {
-    *count += part_number;
-    for gear in adjacent_gears {
-        gear_adjacent_parts
-            .entry(*gear)
-            .and_modify(|e: &mut Vec<u32>| (*e).push(part_number))
-            .or_insert(vec![part_number]);
+fn adjacent_symbols(
+    x_start: usize,
+    x_end: usize,
+    y: usize,
+    grid: &Array2<char>,
+) -> Vec<(i32, i32, char)> {
+    let mut symbols = vec![];
+    for y_adj in y.saturating_sub(1)..=y + 1 {
+        for x_adj in x_start.saturating_sub(1)..=x_end + 1 {
+            if let Some(&symbol) = grid.get((y_adj, x_adj)) {
+                if symbol != '.' && !symbol.is_ascii_digit() {
+                    symbols.push((x_adj as i32, y_adj as i32, symbol));
+                }
+            }
+        }
     }
+    symbols
 }
 
 #[test]
 fn example() {
-    let input = "467..114..
-...*......
-..35..633.
-......#...
-617*......
-.....+.58.
-..592.....
-......755.
-...$.*....
-.664.598..";
+    let input = "467..114.
+...*.....
+..35..633
+......#..
+617*.....
+.....+.58
+..592....
+......755
+...$.*...
+.664.598.";
     assert_eq!(run(input), (4361, 467835));
 }
 
