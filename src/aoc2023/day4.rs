@@ -1,29 +1,22 @@
-pub fn run(input: &str) -> (u32, u32) {
-    let wins_per_card = input
-        .lines()
-        .map(|line| {
-            let mut cards = line.split([':', '|']).map(|l| l.split_whitespace());
-            let winning_cards = cards.nth(1).unwrap().collect::<Vec<_>>();
-            cards.next().unwrap().filter(|card| winning_cards.contains(card)).count() as u32
-        })
-        .collect::<Vec<_>>();
+use itertools::Itertools;
 
-    let mut number_of_copies_by_card = vec![1; wins_per_card.len()];
+pub fn run(input: &str) -> (u32, u32) {
+    let lines = input.lines().collect_vec();
+    let mut card_counts = vec![1; lines.len()];
     let mut points = 0;
-    for i in 0..wins_per_card.len() {
-        let wins = wins_per_card[i];
+    for (i, line) in lines.iter().enumerate() {
+        let mut cards = line.split([':', '|']).map(|l| l.split_whitespace());
+        let winning = cards.nth(1).unwrap().collect_vec();
+        let ours = cards.next().unwrap();
+        let wins = ours.filter(|card| winning.contains(card)).count();
         if wins > 0 {
-            points += 2u32.pow(wins - 1);
-            update_copy_counts(wins, &mut number_of_copies_by_card, i);
+            points += 1 << (wins - 1);
+            for j in 1..=wins {
+                card_counts[i + j] += card_counts[i];
+            }
         }
     }
-    (points, number_of_copies_by_card.iter().sum())
-}
-
-fn update_copy_counts(wins: u32, number_of_copies_by_card: &mut Vec<u32>, i: usize) {
-    for j in 1..=wins as usize {
-        number_of_copies_by_card[i + j] += number_of_copies_by_card[i];
-    }
+    (points, card_counts.iter().sum())
 }
 
 #[test]
