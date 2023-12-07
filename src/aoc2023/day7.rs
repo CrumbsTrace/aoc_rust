@@ -11,28 +11,11 @@ const RANK_P2: [char; 13] = [
 #[derive(Debug, Ord, Eq)]
 struct Hand {
     hand: [char; 5],
+    p2_hand : [char; 5],
+    hand_counts: Vec<(char, usize)>,
+    p2_hand_counts: Vec<(char, usize)>,
     bid: u32,
     p2: bool,
-}
-
-pub fn n_of_kind(hand: [char; 5]) -> usize {
-    *hand.iter().counts().values().max().unwrap()
-}
-
-pub fn is_full_house(hand: [char; 5]) -> bool {
-    let mut hand = hand.to_vec();
-    hand.sort();
-    hand[0] == hand[1] && hand[3] == hand[4] && (hand[2] == hand[1] || hand[2] == hand[3])
-}
-
-pub fn is_two_pair(hand: [char; 5]) -> bool {
-    hand
-        .iter()
-        .counts()
-        .values()
-        .filter(|v| v == &&2)
-        .count()
-        == 2
 }
 
 impl PartialEq for Hand {
@@ -44,11 +27,7 @@ impl PartialEq for Hand {
 impl PartialOrd for Hand {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
         let mut same_type_cmp = None;
-        let rank = if self.p2 {
-            &RANK_P2
-        } else {
-            &RANK
-        };
+        let rank = if self.p2 { &RANK_P2 } else { &RANK };
         for i in 0..5 {
             if self.hand[i] != other.hand[i] {
                 same_type_cmp = rank
@@ -60,58 +39,84 @@ impl PartialOrd for Hand {
             }
         }
 
-        let mut ours = self.hand.clone();
-        let mut theirs = other.hand.clone();
+        let mut ours = self.hand;
+        let mut theirs = other.hand;
+        let mut our_counts = &self.hand_counts;
+        let mut their_counts = &other.hand_counts;
         if self.p2 {
-            update_hand(&mut ours);
-            update_hand(&mut theirs);
+            ours = self.p2_hand;
+            theirs = other.p2_hand;
+            our_counts = &self.p2_hand_counts;
+            their_counts = &other.p2_hand_counts;
         }
 
-        let self_n = n_of_kind(ours);
-        let other_n = n_of_kind(theirs);
-        if self_n > 3 || other_n > 3 {
-            match self_n.cmp(&other_n) {
-                std::cmp::Ordering::Equal => return same_type_cmp,
-                o => return Some(o),
+        if our_counts[0].1 > 3 || their_counts[0].1 > 3 {
+            match our_counts[0].1.cmp(&their_counts[0].1) {
+                std::cmp::Ordering::Equal => same_type_cmp,
+                o => Some(o),
             }
-        }
-
-        let self_is_full_house = is_full_house(ours);
-        let other_is_full_house = is_full_house(theirs);
-        if self_is_full_house || other_is_full_house {
-            match self_is_full_house.cmp(&other_is_full_house) {
-                std::cmp::Ordering::Equal => return same_type_cmp,
-                o => return Some(o),
+        } else if is_full_house(ours) || is_full_house(theirs) {
+            match is_full_house(ours).cmp(&is_full_house(theirs)) {
+                std::cmp::Ordering::Equal => same_type_cmp,
+                o => Some(o),
             }
-        }
-
-        if self_n == 3 || other_n == 3 {
-            match self_n.cmp(&other_n) {
-                std::cmp::Ordering::Equal => return same_type_cmp,
-                o => return Some(o),
+        } else if our_counts[0].1 == 3 || their_counts[0].1 == 3 {
+            match our_counts[0].1.cmp(&their_counts[0].1) {
+                std::cmp::Ordering::Equal => same_type_cmp,
+                o => Some(o),
             }
-        }
-
-        let self_two_pair = is_two_pair(ours);
-        let other_two_pair = is_two_pair(theirs);
-        if self_two_pair || other_two_pair {
-            match self_two_pair.cmp(&other_two_pair) {
-                std::cmp::Ordering::Equal => return same_type_cmp,
-                o => return Some(o),
+        } else if (our_counts[1].1 == 2) || (their_counts[1].1 == 2) {
+            match (our_counts[1].1 == 2).cmp(&(their_counts[1].1 == 2)) {
+                std::cmp::Ordering::Equal => same_type_cmp,
+                o => Some(o),
             }
-        }
-
-        let self_is_pair = self_n == 2;
-        let other_is_pair = other_n == 2;
-        if self_is_pair || other_is_pair {
-            match self_is_pair.cmp(&other_is_pair) {
-                std::cmp::Ordering::Equal => return same_type_cmp,
-                o => return Some(o),
+        } else if (our_counts[0].1 == 2) || (their_counts[0].1 == 2) {
+            match (our_counts[0].1 == 2).cmp(&(their_counts[0].1 == 2)) {
+                std::cmp::Ordering::Equal => same_type_cmp,
+                o => Some(o),
             }
+        } else {
+            same_type_cmp
         }
-
-        same_type_cmp
     }
+}
+
+pub fn run(input: &str) -> (u32, u32) {
+    let mut hands = input
+        .lines()
+        .map(|l| {
+            let (hand, bid) = l.split(" ").collect_tuple().unwrap();
+            let bid = bid.parse::<u32>().unwrap();
+            let hand : [char; 5] = hand.chars().collect_vec().try_into().unwrap();
+            let mut hand_counts = hand.into_iter().counts().into_iter().collect_vec();
+            hand_counts.sort_by_key(|(_, v)| usize::MAX - *v);
+            let mut p2_hand = hand.clone();
+            update_hand(&mut p2_hand);
+            let mut p2_hand_counts = p2_hand.into_iter().counts().into_iter().collect_vec();
+            p2_hand_counts.sort_by_key(|(_, v)| usize::MAX - *v);
+            Hand {
+                hand,
+                p2_hand,
+                hand_counts,
+                p2_hand_counts,
+                bid,
+                p2: false,
+            }
+        })
+        .collect_vec();
+
+    hands.sort();
+    let p1 = hands.iter().enumerate().map(|(i, h)| h.bid * (i as u32 + 1)).sum();
+    hands.iter_mut().for_each(|h| h.p2 = true);
+    hands.sort();
+    let p2 = hands.iter().enumerate().map(|(i, h)| h.bid * (i as u32 + 1)).sum();
+    (p1, p2)
+}
+
+pub fn is_full_house(hand: [char; 5]) -> bool {
+    let mut hand = hand.to_vec();
+    hand.sort();
+    hand[0] == hand[1] && hand[3] == hand[4] && (hand[2] == hand[1] || hand[2] == hand[3])
 }
 
 fn update_hand(ours: &mut [char; 5]) {
@@ -126,28 +131,6 @@ fn update_hand(ours: &mut [char; 5]) {
         .unwrap();
 }
 
-pub fn run(input: &str) -> (u32, u32) {
-    let mut hands = input
-        .lines()
-        .map(|l| {
-            let (hand, bid) = l.split(" ").collect_tuple().unwrap();
-            let bid = bid.parse::<u32>().unwrap();
-            Hand {
-                hand: hand.chars().collect_vec().try_into().unwrap(),
-                bid,
-                p2: false,
-            }
-        })
-        .collect_vec();
-
-    hands.sort();
-    let p1 = hands.iter().enumerate().map(|(i, h)| h.bid * (i as u32 + 1)).sum();
-
-    hands.iter_mut().for_each(|h| h.p2 = true);
-    hands.sort();
-    let p2 = hands.iter().enumerate().map(|(i, h)| h.bid * (i as u32 + 1)).sum();
-    (p1, p2)
-}
 
 #[test]
 fn example() {
