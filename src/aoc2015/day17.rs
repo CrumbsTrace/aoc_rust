@@ -42,7 +42,7 @@ fn minimum_containers(sorted_containers: &[i32], amount: i32, current_count: i32
 #[test]
 fn example() {
     let input = "20\n15\n10\n5\n5";
-    let result = run(&input, 25);
+    let result = run(input, 25);
     assert_eq!(result, (4, 3));
 }
 

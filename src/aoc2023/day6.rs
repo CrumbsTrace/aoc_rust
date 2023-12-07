@@ -6,10 +6,10 @@ pub fn run(input: &str) -> (i64, i64) {
         .filter_map(|n| n.parse::<i64>().ok())
         .collect_vec();
     let (t, d) = values.split_at(values.len() / 2);
-    let p1 = t.iter().zip(d).map(|(&t, &d)| solve(-1 * t, d)).product();
+    let p1 = t.iter().zip(d).map(|(&t, &d)| solve(-t, d)).product();
     let p2_time = t.iter().join("").parse::<i64>().unwrap();
     let p2_dist = d.iter().join("").parse::<i64>().unwrap();
-    let p2 = solve(-1 * p2_time, p2_dist);
+    let p2 = solve(-p2_time, p2_dist);
     (p1, p2)
 }
 

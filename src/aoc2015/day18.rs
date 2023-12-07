@@ -75,9 +75,9 @@ fn parse_lights(input: &str) -> Array2<bool> {
 #[test]
 fn example() {
     let input = ".#.#.#\n...##.\n#....#\n..#...\n#.#..#\n####..";
-    let (result, _) = run(&input, 4);
+    let (result, _) = run(input, 4);
     assert_eq!(result, 4);
-    let (_, result) = run(&input, 5);
+    let (_, result) = run(input, 5);
     assert_eq!(result, 17);
 }
 
