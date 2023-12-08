@@ -18,5 +18,9 @@ fn bench(bencher: divan::Bencher) {
         day5::run(black_box(&input));
         let input = fs::read_to_string("inputs/2023/day6.txt").unwrap();
         day6::run(black_box(&input));
+        let input = fs::read_to_string("inputs/2023/day7.txt").unwrap();
+        day7::run(black_box(&input));
+        let input = fs::read_to_string("inputs/2023/day8.txt").unwrap();
+        day8::run(black_box(&input));
     });
 }
