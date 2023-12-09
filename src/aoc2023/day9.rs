@@ -29,12 +29,9 @@ fn next(seq: &[i64], first: bool) -> i64 {
         ns.push(if first { diffs[0] } else { diffs[diffs.len() - 1] });
         seq = diffs;
     }
+
     if first {
-        let mut result = 0;
-        ns.iter().rev().for_each(|n| {
-            result = n - result;
-        });
-        result
+        ns.iter().rev().fold(0, |result, n| { n - result })
     } else {
         ns.iter().sum()
     }
