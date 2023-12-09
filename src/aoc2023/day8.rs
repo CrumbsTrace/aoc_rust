@@ -101,7 +101,7 @@ XXX = (XXX, XXX)";
 #[test]
 fn real_input() {
     let input = std::fs::read_to_string("inputs/2023/day8.txt").unwrap();
-    assert_eq!(run(&input), (17873, 0));
+    assert_eq!(run(&input), (17873, 15746133679061));
 }
 
 #[divan::bench]
