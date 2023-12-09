@@ -10,13 +10,15 @@ pub fn run(input: &str) -> (i64, i64) {
         })
         .collect_vec();
 
-    let p1 = sequences.iter().map(|s| next(s, false)).sum();
-    let p2 = sequences.iter().map(|s| next(s, true)).sum();
-    (p1, p2)
+    sequences
+        .iter()
+        .map(|s| next(s))
+        .fold((0, 0), |(p1, p2), (n1, n2)| (p1 + n1, p2 + n2))
 }
 
-fn next(seq: &[i64], first: bool) -> i64 {
-    let mut ns = vec![if first { seq[0] } else { seq[seq.len() - 1] }];
+fn next(seq: &[i64]) -> (i64, i64) {
+    let mut firsts = vec![seq[0]];
+    let mut lasts = vec![seq[seq.len() - 1]];
     let mut seq = seq.to_owned();
     let mut non_zero = true;
     while non_zero {
@@ -26,15 +28,14 @@ fn next(seq: &[i64], first: bool) -> i64 {
             diffs.push(ns[1] - ns[0]);
             non_zero = non_zero || ns[1] - ns[0] != 0;
         });
-        ns.push(if first { diffs[0] } else { diffs[diffs.len() - 1] });
+        firsts.push(diffs[0]);
+        lasts.push(diffs[diffs.len() - 1]);
         seq = diffs;
     }
 
-    if first {
-        ns.iter().rev().fold(0, |result, n| { n - result })
-    } else {
-        ns.iter().sum()
-    }
+    let last = lasts.iter().sum();
+    let first = firsts.iter().rev().fold(0, |result, n| n - result);
+    (last, first)
 }
 
 #[test]
