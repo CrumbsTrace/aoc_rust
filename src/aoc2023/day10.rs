@@ -63,7 +63,6 @@ fn get_outside_edges(map: &Array2<bool>) -> Vec<(usize, usize)> {
     edges
 }
 
-//The that two neighbors get an extra piece inserted in between
 fn scale_up(map: &Array2<char>, start: (usize, usize)) -> Array2<bool> {
     let mut new_map = Array2::from_elem((map.dim().0 * 2 - 1, map.dim().1 * 2 - 1), false);
     let mut queue = VecDeque::from(vec![start]);
