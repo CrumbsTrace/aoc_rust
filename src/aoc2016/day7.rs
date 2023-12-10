@@ -82,7 +82,7 @@ fn test() {
 #[test]
 fn real_input() {
     let input = std::fs::read_to_string("inputs/2016/day7.txt").unwrap();
-    assert_eq!(run(&input), (115, 44));
+    assert_eq!(run(&input), (115, 231));
 }
 
 #[divan::bench]

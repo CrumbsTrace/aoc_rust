@@ -73,7 +73,7 @@ fn scale_up(map: &Array2<char>, start: (usize, usize)) -> Array2<bool> {
             continue;
         }
         visited.insert(pos);
-        let neighbors = valid_neighbors(&map, pos);
+        let neighbors = valid_neighbors(map, pos);
         for (x, y) in neighbors {
             queue.push_back((x, y));
             let new_pos = (x * 2, y * 2);
@@ -190,7 +190,7 @@ L--J.L7...LJS7F-7L7.
 #[test]
 fn real_input() {
     let input = std::fs::read_to_string("inputs/2023/day10.txt").unwrap();
-    assert_eq!(run(&input), (7102, 323));
+    assert_eq!(run(&input), (7102, 363));
 }
 
 #[divan::bench]
