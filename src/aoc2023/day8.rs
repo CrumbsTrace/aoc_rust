@@ -38,7 +38,6 @@ pub fn traverse(
     let mut finish_count = 0;
     while finish_count < current_locations.len() {
         let instruction = instructions[i];
-        #[warn(clippy::needless_range_loop)]
         for j in 0..current_locations.len() {
             let current = current_locations[j];
             if current.ends_with('Z') {
