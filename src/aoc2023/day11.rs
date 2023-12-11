@@ -1,57 +1,35 @@
-use std::collections::HashSet;
-use itertools::Itertools;
-
 pub fn run(input: &str) -> (i64, i64) {
-    let lines = input.lines().map(|l| l.chars().collect_vec()).collect_vec();
-
+    let lines = input.lines().collect::<Vec<_>>();
     let mut galaxies = Vec::new();
-    let mut empty_rows = HashSet::new();
-    let mut empty_cols = HashSet::new();
-    for y in 0..lines.len() {
-        let mut empty_row = true;
-        for x in 0..lines[0].len() {
-            if lines[y][x] == '#' {
+    let mut empty_rows = vec![true; lines.len()];
+    let mut empty_cols = vec![true; lines[0].len()];
+    for (y, row) in lines.iter().enumerate() {
+        for (x, c) in row.chars().enumerate() {
+            if c == '#' {
                 galaxies.push((x as i64, y as i64));
-                empty_row = false;
+                empty_rows[y] = false;
+                empty_cols[x] = false;
             }
-        }
-        if empty_row {
-            empty_rows.insert(y as i64);
-        }
-    }
-
-    for x in 0..lines[0].len() {
-        let mut empty_col = true;
-        for y in 0..lines.len() {
-            if lines[y][x] == '#' {
-                empty_col = false;
-            }
-        }
-        if empty_col {
-            empty_cols.insert(x as i64);
         }
     }
 
     let mut p1 = 0;
     let mut p2 = 0;
-    for galaxy in galaxies.into_iter().combinations(2) {
-        let (x1, y1) = galaxy[0];
-        let (x2, y2) = galaxy[1];
-        let base_distance = (x1 - x2).abs() + (y1 - y2).abs();
-        let mut empty_count = if x1 <= x2 {
-            (x1..x2).filter(|x| empty_cols.contains(x)).count() as i64
-        } else {
-            (x2..x1).filter(|x| empty_cols.contains(x)).count() as i64
-        };
-
-        empty_count += if y1 <= y2 {
-            (y1..y2).filter(|y| empty_rows.contains(y)).count() as i64
-        } else {
-            (y2..y1).filter(|y| empty_rows.contains(y)).count() as i64
-        };
-
-        p1 += base_distance + empty_count;
-        p2 += base_distance + empty_count * 999_999;
+    for i in 0..galaxies.len() {
+        for j in i + 1..galaxies.len() {
+            let (x1, y1) = galaxies[i];
+            let (x2, y2) = galaxies[j];
+            let empty_cols = (x1.min(x2)..x2.max(x1))
+                .filter(|x| empty_cols[*x as usize])
+                .count() as i64;
+            let empty_rows = (y1.min(y2)..y2.max(y1))
+                .filter(|y| empty_rows[*y as usize])
+                .count() as i64;
+            let empty_count = empty_cols + empty_rows;
+            let base_distance = (x1 - x2).abs() + (y1 - y2).abs();
+            p1 += base_distance + empty_count;
+            p2 += base_distance + empty_count * 999_999;
+        }
     }
     (p1, p2)
 }

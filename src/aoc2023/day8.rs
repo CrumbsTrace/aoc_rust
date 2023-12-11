@@ -38,18 +38,17 @@ pub fn traverse(
     let mut finish_count = 0;
     while finish_count < current_locations.len() {
         let instruction = instructions[i];
-        for j in 0..current_locations.len() {
-            let current = current_locations[j];
+        for current in current_locations.iter_mut() {
             if current.ends_with('Z') {
                 continue;
             }
             let (left, right) = nodes.get(current).unwrap();
             match instruction {
-                'L' => current_locations[j] = left,
-                'R' => current_locations[j] = right,
+                'L' => *current = left,
+                'R' => *current = right,
                 _ => panic!("Unknown instruction {}", instruction),
             }
-            if current_locations[j].ends_with('Z') {
+            if current.ends_with('Z') {
                 result = lcm(steps + 1, result);
                 finish_count += 1;
             }
