@@ -8,51 +8,44 @@ pub fn run(input: &str) -> (u64, u64) {
         .par_bridge()
         .map(|line| {
             let mut line = line.split([' ', ',']);
-            let mut springs = parse_row(line.next().unwrap());
+            let mut springs = line.next().unwrap().chars().collect_vec();
             let expected = line.filter_map(|x| x.parse().ok()).collect_vec();
-            let p1 = count_solutions(&springs, &expected, 0, &mut HashMap::new());
-            springs.push(2);
-            let new_springs = springs.iter().copied().cycle().take(5 * springs.len()).collect_vec();
-            let new_expected = expected.iter().copied().cycle().take(5 * expected.len()).collect_vec();
-            let p2 = count_solutions(&new_springs[..new_springs.len() - 1], &new_expected, 0, &mut HashMap::new());
+            let p1 = solve(&springs, &expected, 0, &mut HashMap::new());
+            springs.push('?');
+            let new_springs = &unfold(&springs)[..springs.len() * 5 - 1];
+            let new_groups = unfold(&expected);
+            let p2 = solve(new_springs, &new_groups, 0, &mut HashMap::new());
             (p1, p2)
         })
         .reduce(|| (0, 0), |(a, b), (c, d)| (a + c, b + d))
 }
 
-fn count_solutions(
-    initial: &[u8],
-    expected: &[u8],
-    start: usize,
-    known_scenarios: &mut HashMap<(usize, usize), u64>,
-) -> u64 {
-    if let Some(&count) = known_scenarios.get(&(start, expected.len())) {
-        return count;
-    }
-
-    if start >= initial.len() || expected.is_empty() {
-        let success = start >= initial.len() || initial[start..].iter().all(|x| *x != 1);
+fn solve(springs: &[char], groups: &[u8], start: usize, known: &mut HashMap<(usize, usize), u64>) -> u64 {
+    if start >= springs.len() || groups.is_empty() {
+        let success = start >= springs.len() || springs[start..].iter().all(|x| *x != '#');
         return success as u64;
     }
 
-    let minimum_length = expected.iter().sum::<u8>() as usize + expected.len() - 1;
-    let mut maximum_end = initial.len() - minimum_length;
-    if let Some(pos) = initial[start..].iter().position(|&x| x == 1) {
-        if start + pos < maximum_end {
-            maximum_end = start + pos;
-        }
+    let mut max_start = springs.len() - (groups.iter().sum::<u8>() as usize + groups.len() - 1);
+    if let Some(pos) = springs[start..].iter().position(|&x| x == '#') {
+        max_start = max_start.min(start + pos);
     }
-    initial[start..=maximum_end]
+
+    springs[start..=max_start]
         .iter()
-        .positions(|&pos| pos != 0)
+        .positions(|&pos| pos != '.')
         .map(|pos| {
             let new_start = start + pos;
-            let end = new_start + expected[0] as usize;
-            if initial[new_start..end].iter().all(|&x| x != 0)
-                && (end == initial.len() || initial[end] != 1)
+            let end = new_start + groups[0] as usize;
+            if let Some(&count) = known.get(&(end + 1, groups.len() - 1)) {
+                return count;
+            }
+
+            if springs[new_start..end].iter().all(|&x| x != '.')
+                && (end == springs.len() || springs[end] != '#')
             {
-                let count = count_solutions(initial, &expected[1..], end + 1, known_scenarios);
-                known_scenarios.insert((end + 1, expected.len() - 1), count);
+                let count = solve(springs, &groups[1..], end + 1, known);
+                known.insert((end + 1, groups.len() - 1), count);
                 count
             } else {
                 0
@@ -61,15 +54,8 @@ fn count_solutions(
         .sum()
 }
 
-fn parse_row(row: &str) -> Vec<u8> {
-    row.chars()
-        .map(|c| match c {
-            '#' => 1,
-            '.' => 0,
-            '?' => 2,
-            _ => unreachable!(),
-        })
-        .collect_vec()
+fn unfold<T>(v: &[T]) -> Vec<T> where T: Copy {
+    v.iter().copied().cycle().take(5 * v.len()).collect_vec()
 }
 
 #[test]
