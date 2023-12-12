@@ -9,11 +9,11 @@ pub fn run(input: &str) -> (u64, u64) {
         .map(|line| {
             let mut line = line.split([' ', ',']);
             let mut springs = line.next().unwrap().chars().collect_vec();
-            let expected = line.filter_map(|x| x.parse().ok()).collect_vec();
-            let p1 = solve(&springs, &expected, 0, &mut HashMap::new());
+            let groups = line.filter_map(|x| x.parse().ok()).collect_vec();
+            let p1 = solve(&springs, &groups, 0, &mut HashMap::new());
             springs.push('?');
             let new_springs = &unfold(&springs)[..springs.len() * 5 - 1];
-            let new_groups = unfold(&expected);
+            let new_groups = unfold(&groups);
             let p2 = solve(new_springs, &new_groups, 0, &mut HashMap::new());
             (p1, p2)
         })
