@@ -16,32 +16,29 @@ pub fn run(input: &str) -> (usize, usize) {
     let mut p1 = 0;
     let mut p2 = 0;
     for (pattern, transposed) in patterns {
-        let mut pattern_p1 = None;
-        let mut pattern_p2 = None;
-        for x in 1..transposed.len() {
-            if pattern_p1 == None && is_mirrored(&pattern, x, false) {
-                pattern_p1 = Some(x);
-            }
-            if pattern_p2 == None && is_mirrored(&pattern, x, true) {
-                pattern_p2 = Some(x);
-            }
-        }
-
-        for y in 1..pattern.len() {
-            if pattern_p1 == None && is_mirrored(&transposed, y, false) {
-                pattern_p1 = Some(y * 100);
-            }
-            if pattern_p2 == None && is_mirrored(&transposed, y, true) {
-                pattern_p2 = Some(y * 100);
-            }
-        }
-        p1 += pattern_p1.expect(&format!("Didn't find a pattern for part 1, {:?}", pattern));
-        p2 += pattern_p2.expect(&format!("Didn't find a pattern for part 2, {:?}", pattern));
+        let (p1_y, p2_y) = find_reflection(&pattern);
+        let (p1_x, p2_x) = find_reflection(&transposed);
+        p1 += p1_y.unwrap_or(p1_x.unwrap_or(0) * 100);
+        p2 += p2_y.unwrap_or(p2_x.unwrap_or(0) * 100);
     }
     (p1, p2)
 }
 
-fn is_mirrored(pattern: &Vec<Vec<char>>, x: usize, p2: bool) -> bool {
+fn find_reflection(pattern: &[Vec<char>]) -> (Option<usize>, Option<usize>) {
+    let mut p1 = None;
+    let mut p2 = None;
+    for i in 1..pattern[0].len() {
+        if p1.is_none() && is_mirrored(pattern, i, false) {
+            p1 = Some(i);
+        }
+        if p2.is_none() && is_mirrored(pattern, i, true) {
+            p2 = Some(i);
+        }
+    }
+    (p1, p2)
+}
+
+fn is_mirrored(pattern: &[Vec<char>], x: usize, p2: bool) -> bool {
     let mut total_smudges = 0;
     pattern.iter().all(|line| {
         let (left, right) = line.split_at(x);
@@ -62,8 +59,8 @@ fn transpose(v: &Vec<Vec<char>>) -> Vec<Vec<char>> {
     let mut result = Vec::with_capacity(v[0].len());
     for x in 0..v[0].len() {
         result.push(Vec::with_capacity(v.len()));
-        for y in 0..v.len() {
-            result[x].push(v[y][x]);
+        for row in v {
+            result[x].push(row[x]);
         }
     }
     result
@@ -92,7 +89,7 @@ fn example() {
 #[test]
 fn real_input() {
     let input = std::fs::read_to_string("inputs/2023/day13.txt").unwrap();
-    assert_eq!(run(&input), (29213, 0));
+    assert_eq!(run(&input), (29213, 37453));
 }
 
 #[divan::bench]
