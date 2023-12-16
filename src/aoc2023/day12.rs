@@ -1,6 +1,6 @@
 use itertools::Itertools;
 use rayon::prelude::*;
-use std::collections::HashMap;
+use rustc_hash::FxHashMap;
 
 pub fn run(input: &str) -> (u64, u64) {
     input
@@ -10,17 +10,17 @@ pub fn run(input: &str) -> (u64, u64) {
             let mut line = line.split([' ', ',']);
             let mut springs = line.next().unwrap().chars().collect_vec();
             let groups = line.filter_map(|x| x.parse().ok()).collect_vec();
-            let p1 = solve(&springs, &groups, 0, &mut HashMap::new());
+            let p1 = solve(&springs, &groups, 0, &mut FxHashMap::default());
             springs.push('?');
             let new_springs = &unfold(&springs)[..springs.len() * 5 - 1];
             let new_groups = unfold(&groups);
-            let p2 = solve(new_springs, &new_groups, 0, &mut HashMap::new());
+            let p2 = solve(new_springs, &new_groups, 0, &mut FxHashMap::default());
             (p1, p2)
         })
         .reduce(|| (0, 0), |(a, b), (c, d)| (a + c, b + d))
 }
 
-fn solve(springs: &[char], groups: &[u8], start: usize, known: &mut HashMap<(usize, usize), u64>) -> u64 {
+fn solve(springs: &[char], groups: &[u8], start: usize, known: &mut FxHashMap<(usize, usize), u64>) -> u64 {
     if start >= springs.len() || groups.is_empty() {
         let success = start >= springs.len() || springs[start..].iter().all(|x| *x != '#');
         return success as u64;

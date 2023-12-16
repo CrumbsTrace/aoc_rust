@@ -1,5 +1,5 @@
 use itertools::Itertools;
-use std::collections::HashMap;
+use rustc_hash::FxHashMap;
 
 pub fn run(input: &str) -> (u64, u64) {
     let mut line_iter = input.lines();
@@ -14,7 +14,7 @@ pub fn run(input: &str) -> (u64, u64) {
                 .unwrap();
             (name, (left, right))
         })
-        .collect::<HashMap<_, _>>();
+        .collect::<FxHashMap<_, _>>();
 
     let steps = traverse(&nodes, &instr, &["AAA"]);
     let xxa_nodes = nodes
@@ -27,7 +27,7 @@ pub fn run(input: &str) -> (u64, u64) {
 }
 
 pub fn traverse(
-    nodes: &HashMap<&str, (&str, &str)>,
+    nodes: &FxHashMap<&str, (&str, &str)>,
     instructions: &[char],
     starts: &[&str],
 ) -> u64 {

@@ -1,6 +1,7 @@
 use itertools::Itertools;
 use ndarray::Array2;
-use std::collections::{HashSet, VecDeque};
+use std::collections::VecDeque;
+use rustc_hash::FxHashSet;
 
 pub fn run(input: &str) -> (usize, usize) {
     let lines = input.lines().map(|l| l.chars().collect_vec()).collect_vec();
@@ -16,10 +17,10 @@ pub fn run(input: &str) -> (usize, usize) {
     (true_count / 4, inside_count)
 }
 
-fn flood_fill_outside(map: &Array2<bool>) -> HashSet<(usize, usize)> {
+fn flood_fill_outside(map: &Array2<bool>) -> FxHashSet<(usize, usize)> {
     let edges = get_outside_edges(map);
     let mut queue = VecDeque::from(edges);
-    let mut visited = HashSet::new();
+    let mut visited = FxHashSet::default();
     while let Some(pos) = queue.pop_front() {
         if visited.contains(&pos) {
             continue;
@@ -66,7 +67,7 @@ fn get_outside_edges(map: &Array2<bool>) -> Vec<(usize, usize)> {
 fn scale_up(map: &Array2<char>, start: (usize, usize)) -> Array2<bool> {
     let mut new_map = Array2::from_elem((map.dim().0 * 2 - 1, map.dim().1 * 2 - 1), false);
     let mut queue = VecDeque::from(vec![start]);
-    let mut visited = HashSet::new();
+    let mut visited = FxHashSet::default();
     while let Some(pos) = queue.pop_front() {
         if visited.contains(&pos) {
             continue;
