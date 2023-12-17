@@ -5,6 +5,8 @@ use super::*;
 #[divan::bench]
 fn bench(bencher: divan::Bencher) {
     bencher.bench(|| {
+        let input = fs::read_to_string("inputs/2023/day16.txt").unwrap();
+        day16::run(black_box(&input));
         let input = fs::read_to_string("inputs/2023/day1.txt").unwrap();
         day1::run(black_box(&input));
         let input = fs::read_to_string("inputs/2023/day2.txt").unwrap();
@@ -35,7 +37,7 @@ fn bench(bencher: divan::Bencher) {
         day14::run(black_box(&input));
         let input = fs::read_to_string("inputs/2023/day15.txt").unwrap();
         day15::run(black_box(&input));
-        let input = fs::read_to_string("inputs/2023/day16.txt").unwrap();
-        day16::run(black_box(&input));
+        let input = fs::read_to_string("inputs/2023/day17.txt").unwrap();
+        day17::run(black_box(&input));
     });
 }
