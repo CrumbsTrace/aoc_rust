@@ -144,5 +144,5 @@ fn real_input() {
 #[divan::bench]
 fn bench(bencher: divan::Bencher) {
     let input = std::fs::read_to_string("inputs/2023/day17.txt").unwrap();
-    bencher.bench_local(|| run(divan::black_box(&input)));
+    bencher.bench(|| run(divan::black_box(&input)));
 }

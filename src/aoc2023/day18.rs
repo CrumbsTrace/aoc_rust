@@ -31,10 +31,10 @@ fn magnitude(pos1: (i64, i64), pos2: (i64, i64)) -> i64 {
 
 fn p1_parse(parts: &[&str], (x, y): (i64, i64)) -> (i64, i64) {
     match parts[0] {
-        "R" => (x + i64::from_str_radix(parts[1], 16).unwrap(), y),
-        "L" => (x - i64::from_str_radix(parts[1], 16).unwrap(), y),
-        "U" => (x, y + i64::from_str_radix(parts[1], 16).unwrap()),
-        _ => (x, y - i64::from_str_radix(parts[1], 16).unwrap()),
+        "R" => (x + parts[1].parse::<i64>().unwrap(), y),
+        "L" => (x - parts[1].parse::<i64>().unwrap(), y),
+        "U" => (x, y + parts[1].parse::<i64>().unwrap()),
+        _ => (x, y - parts[1].parse::<i64>().unwrap()),
     }
 }
 
@@ -76,5 +76,5 @@ fn real_input() {
 #[divan::bench]
 fn bench(bencher: divan::Bencher) {
     let input = std::fs::read_to_string("inputs/2023/day18.txt").unwrap();
-    bencher.bench_local(|| run(divan::black_box(&input)));
+    bencher.bench(|| run(divan::black_box(&input)));
 }
