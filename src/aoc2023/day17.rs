@@ -2,7 +2,7 @@ use itertools::Itertools;
 use rustc_hash::FxHashMap;
 use std::collections::BinaryHeap;
 
-#[derive(Debug, Clone, Copy, Eq, Ord, Hash)]
+#[derive(Debug, Clone, Copy)]
 struct Step {
     steps: u32,
     x: usize,
@@ -13,7 +13,13 @@ struct Step {
 
 impl PartialOrd for Step {
     fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
-        Some(other.steps.cmp(&self.steps))
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for Step {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        other.steps.cmp(&self.steps)
     }
 }
 
@@ -22,6 +28,8 @@ impl PartialEq for Step {
         other.steps.eq(&self.steps)
     }
 }
+
+impl Eq for Step {}
 
 pub fn run(input: &str) -> (u32, u32) {
     let grid = input
@@ -103,9 +111,9 @@ fn update_visited(ultra: bool, best_streak: &mut u8, step: Step) -> bool {
             check = false;
         }
 
-        if step.streak >= 4 && step.streak < *best_streak {
-            *best_streak = step.streak;
-        } else if *best_streak < 4 && step.streak > *best_streak {
+        if (step.streak >= 4 && step.streak < *best_streak)
+            || (*best_streak < 4 && step.streak > *best_streak)
+        {
             *best_streak = step.streak;
         }
     } else {

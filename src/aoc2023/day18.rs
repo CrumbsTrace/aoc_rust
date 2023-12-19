@@ -10,7 +10,7 @@ pub fn run(input: &str) -> (i64, i64) {
     for line in input.lines() {
         let parts = line.split([' ', '(', ')', '#']).filter(|l| !l.is_empty()).collect_vec();
         let new_pos1 = p1_parse(&parts[0..2], pos1);
-        let new_pos2 = p2_parse(&parts[2], pos2);
+        let new_pos2 = p2_parse(parts[2], pos2);
         shoelace1 += shoelace(pos1, new_pos1);
         p1_circumference += magnitude(pos1, new_pos1);
         shoelace2 += shoelace(pos2, new_pos2);
