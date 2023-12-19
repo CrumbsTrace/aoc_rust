@@ -64,7 +64,7 @@ pub fn run(input: &str) -> (u64, u64) {
     (p1, p2)
 }
 
-//The four ratings x, m, a and s can all be values between 0 and 4000.
+//The four ratings x, m, a and s can all be values between 1 and 4000.
 //We want to find the number of unique combinations of these ratings that will result in the rating
 //being accepted, aka it ends in the destination "A".
 fn number_of_valid_combinations(workflows: &FxHashMap<String, Vec<Rule>>) -> u64 {
