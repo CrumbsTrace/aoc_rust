@@ -12,9 +12,9 @@ enum Module {
 impl Module {
     fn destinations(&self) -> &Vec<String> {
         match self {
-            Module::Broadcast(destinations) => &destinations,
-            Module::FlipFlop(destinations, _) => &destinations,
-            Module::Conjuction(destinations, _) => &destinations,
+            Module::Broadcast(destinations) => destinations,
+            Module::FlipFlop(destinations, _) => destinations,
+            Module::Conjuction(destinations, _) => destinations,
         }
     }
 
@@ -90,7 +90,7 @@ fn push_button_n_times(modules: &mut FxHashMap<String, Module>, n: u64) -> ((u64
                 let lcm = track_inputs
                     .values()
                     .map(|v| v.unwrap())
-                    .fold(1, |acc, v| lcm(acc, v));
+                    .fold(1, lcm);
                 track_i = Some(lcm);
             }
         }
@@ -143,15 +143,15 @@ fn parse(input: &str) -> FxHashMap<String, Module> {
                 inputs_map
                     .entry(destination)
                     .or_insert_with(Vec::new)
-                    .push(name.replace("%", "").replace("&", "").to_string());
+                    .push(name.replace(['%', '&'], "").to_string());
             }
             if parts[0] == "broadcaster" {
                 (name, Module::Broadcast(destinations))
             } else if parts[0].starts_with('%') {
-                (name.replace("%", ""), Module::FlipFlop(destinations, false))
+                (name.replace('%', ""), Module::FlipFlop(destinations, false))
             } else {
                 (
-                    name.replace("&", ""),
+                    name.replace('&', ""),
                     Module::Conjuction(destinations, FxHashMap::default()),
                 )
             }
