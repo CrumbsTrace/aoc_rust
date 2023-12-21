@@ -62,10 +62,8 @@ fn p2(grid: &Array2<u8>) -> u64 {
 fn process(visited: &ArrayView2<bool>, keep_even: bool) -> u64 {
     let mut result = 0;
     for ((x, y), visited) in visited.indexed_iter() {
-        if *visited {
-            if (keep_even && (x + y) % 2 == 0) || (!keep_even && (x + y) % 2 == 1) {
-                result += 1;
-            }
+        if *visited && ((keep_even && (x + y) % 2 == 0) || (!keep_even && (x + y) % 2 == 1)) {
+            result += 1;
         }
     }
     result
