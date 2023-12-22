@@ -1,9 +1,8 @@
-use std::collections::VecDeque;
-
 use itertools::Itertools;
 use ndarray::{s, Array3};
 use rayon::prelude::*;
 use rustc_hash::{FxHashMap, FxHashSet};
+use std::collections::VecDeque;
 
 pub fn run(input: &str) -> (u32, u32) {
     let mut max_x = 0;
