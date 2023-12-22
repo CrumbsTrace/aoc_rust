@@ -25,7 +25,7 @@ pub fn run(input: &str) -> (u32, u32) {
         })
         .collect_vec();
 
-    let (_grid, leans_on, supports) = drop_blocks(&blocks, max_x, max_y, max_z);
+    let (leans_on, supports) = drop_blocks(&blocks, max_x, max_y, max_z);
     let mut removable = 0;
     //Find which could be removed without causing a collapse
     for (_block, supports) in supports.iter() {
@@ -80,19 +80,8 @@ fn drop_blocks(
     highest_x: usize,
     highest_y: usize,
     highest_z: usize,
-) -> (
-    Array3<usize>,
-    FxHashMap<usize, Vec<usize>>,
-    FxHashMap<usize, Vec<usize>>,
-) {
-    let mut grid = Array3::from_elem(
-        (
-            highest_x as usize + 1,
-            highest_y as usize + 1,
-            highest_z as usize + 1,
-        ),
-        0,
-    );
+) -> (FxHashMap<usize, Vec<usize>>, FxHashMap<usize, Vec<usize>>) {
+    let mut grid = Array3::from_elem((highest_x + 1, highest_y + 1, highest_z + 1), 0);
     let mut leans_on = FxHashMap::default();
     let mut supports = FxHashMap::default();
     let mut blocks = blocks.to_vec();
@@ -101,14 +90,14 @@ fn drop_blocks(
         supports.insert(i + 1, Vec::new());
         for new_z in (0..z1).rev() {
             let non_zero_blocks = grid
-                .slice(s![x1..=x2, y1..=y2, new_z as usize])
+                .slice(s![x1..=x2, y1..=y2, new_z])
                 .into_iter()
                 .filter(|&&b| b > 0)
-                .map(|&b| b)
+                .copied()
                 .unique()
                 .collect_vec();
 
-            if non_zero_blocks.len() > 0 || new_z == 0 {
+            if !non_zero_blocks.is_empty() || new_z == 0 {
                 grid.slice_mut(s![x1..=x2, y1..=y2, (new_z + 1)..=((new_z + 1) + z2 - z1)])
                     .fill(i + 1);
                 for &block in &non_zero_blocks {
@@ -119,7 +108,7 @@ fn drop_blocks(
             }
         }
     }
-    (grid, leans_on, supports)
+    (leans_on, supports)
 }
 
 #[test]
