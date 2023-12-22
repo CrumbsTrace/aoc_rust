@@ -27,7 +27,6 @@ pub fn run(input: &str) -> (u32, u32) {
 
     let (leans_on, supports) = drop_blocks(&blocks, max_x, max_y, max_z);
     let mut removable = 0;
-    //Find which could be removed without causing a collapse
     for (_block, supports) in supports.iter() {
         let mut can_be_removed = true;
         for &support in supports {
