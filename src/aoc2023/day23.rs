@@ -102,9 +102,12 @@ fn longest_path(graph: &FxHashMap<Point, FxHashMap<Point, i32>>, start: Point, e
     let mut longest = 0;
     while let Some((distance, pos, previous_pos, mut visited)) = queue.pop() {
         if pos == end {
-            longest = longest.max(distance);
+            if distance > longest {
+                longest = distance;
+            }
             continue;
         }
+
         let next_options = graph[&pos]
             .iter()
             .filter(|(p, _)| previous_pos != **p && !visited.contains(p))
