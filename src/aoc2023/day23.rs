@@ -6,19 +6,16 @@ type Point = (u16, u16);
 
 pub fn run(input: &str) -> (i32, i32) {
     let maze = input.lines().map(|line| line.as_bytes()).collect_vec();
-    let start = (1, 0);
-    let end = ((maze[0].len() - 2) as u16, (maze.len() - 1) as u16);
-    let graph = build_graph(&maze, false);
-    let p1 = longest_path(&graph, start, end, FxHashSet::default());
-    let p2 = p2(&maze);
+    let p1 = get_max_length(&maze, false);
+    let p2 = get_max_length(&maze, true);
     (p1, p2)
 }
 
-fn p2(maze: &[&[u8]]) -> i32 {
+fn get_max_length(maze: &[&[u8]], allow_slope: bool) -> i32 {
     let end = ((maze[0].len() - 2) as u16, (maze.len() - 1) as u16);
-    let graph = build_graph(maze, true);
+    let graph = build_graph(maze, allow_slope);
     //For multithreading, collect a few starting positions 
-    let starts = collect_starts(&graph, 32.min(graph.len() - 2));
+    let starts = collect_starts(&graph, 32.min(graph.len() - 2).max(1));
     starts.into_par_iter().map(|(p, d, visited)| {
         longest_path(&graph, p, end, visited) + d
     }).max().unwrap()
