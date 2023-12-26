@@ -49,7 +49,7 @@ fn minimum_cut(graph: &FxHashMap<&str, Vec<String>>) -> (u32, u32) {
         let mut to_add = graph
             .get(max_edge.as_str())
             .unwrap()
-            .into_iter()
+            .iter()
             .filter(|e| *e != vertex)
             .cloned()
             .collect_vec();

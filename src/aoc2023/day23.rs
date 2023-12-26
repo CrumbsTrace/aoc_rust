@@ -16,7 +16,7 @@ pub fn run(input: &str) -> (i32, i32) {
 
 fn p2(maze: &[&[u8]]) -> i32 {
     let end = ((maze[0].len() - 2) as u16, (maze.len() - 1) as u16);
-    let graph = build_graph(&maze, true);
+    let graph = build_graph(maze, true);
     //For multithreading, collect a few starting positions 
     let starts = collect_starts(&graph, 32.min(graph.len() - 2));
     starts.into_par_iter().map(|(p, d, visited)| {
