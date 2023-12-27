@@ -3,7 +3,6 @@ use std::fs;
 
 use super::*;
 #[divan::bench]
-#[ignore]
 fn bench(bencher: divan::Bencher) {
     bencher.bench(|| {
         let input = fs::read_to_string("inputs/2015/day1.txt").unwrap();

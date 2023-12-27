@@ -4,17 +4,13 @@ use rayon::prelude::*;
 use std::fs;
 
 // MD5 can only really be brute forced for this realistically
-// We use rayon for threading which is unnecessary here but was fun to implement
 pub fn run(mut input: &str, skip_p2: bool) -> (i32, i32) {
     input = input.trim();
 
-    let p1 = (0..i32::MAX)
+    let p1 = (0..2_000_000)
         .into_par_iter()
         .find_first(|i| {
-            let mut hasher = Md5::new();
-            hasher.update(input.as_bytes());
-            hasher.update(i.to_string().as_bytes());
-            let output = hasher.finalize();
+            let output = get_hash(input, i);
             output[0] == 0 && output[1] == 0 && output[2] < 16
         })
         .unwrap();
@@ -22,19 +18,23 @@ pub fn run(mut input: &str, skip_p2: bool) -> (i32, i32) {
     let mut p2 = 0;
 
     if !skip_p2 {
-        p2 = (p1..i32::MAX)
+        p2 = (p1..2_000_000)
             .into_par_iter()
             .find_first(|i| {
-                let mut hasher = Md5::new();
-                hasher.update(input.as_bytes());
-                hasher.update(i.to_string().as_bytes());
-                let output = hasher.finalize();
+                let output = get_hash(input, i);
                 output[0] == 0 && output[1] == 0 && output[2] == 0
             })
             .unwrap();
     }
 
     (p1, p2)
+}
+
+fn get_hash(input: &str, i: &i32) -> [u8; 16] {
+    let mut hasher = Md5::new();
+    hasher.update(input.as_bytes());
+    hasher.update(i.to_string().as_bytes());
+    hasher.finalize().into()
 }
 
 #[test]
@@ -51,9 +51,8 @@ fn real_input() {
     assert_eq!(p2, 1038736);
 }
 
-#[divan::bench(threads = false)]
+#[divan::bench]
 fn bench(bencher: divan::Bencher) {
     let input = fs::read_to_string("inputs/2015/day4.txt").unwrap();
-    rayon::ThreadPoolBuilder::new().num_threads(1).build_global().unwrap();
-    bencher.bench_local(|| run(black_box(&input), false));
+    bencher.bench(|| run(black_box(&input), false));
 }
